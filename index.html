@@ -1,3070 +1,1911 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MATH RACE – Balap Matematika</title>
-
-<style>
-:root {
-  --ink: #17324d;
-  --muted: #647b91;
-  --blue: #39a9f4;
-  --blue-dark: #1687d1;
-  --yellow: #ffd84d;
-  --orange: #ff9d42;
-  --green: #27c889;
-  --red: #ff6278;
-  --purple: #8765e8;
-  --shadow: 0 14px 35px rgba(34, 75, 111, .16);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  min-height: 100%;
-}
-
-body {
-  font-family: "Trebuchet MS", Arial, sans-serif;
-  color: var(--ink);
-  overflow-x: hidden;
-  background:
-    linear-gradient(
-      180deg,
-      #7bd5ff 0%,
-      #b8edff 48%,
-      #d8f7d0 48%,
-      #9bdc83 100%
-    );
-}
-
-body::before,
-body::after {
-  content: "";
-  position: fixed;
-  z-index: -1;
-  width: 150px;
-  height: 55px;
-  border-radius: 50px;
-  background: rgba(255, 255, 255, .75);
-  top: 9%;
-  left: 5%;
-  box-shadow:
-    35px 12px 0 -5px rgba(255, 255, 255, .75),
-    75px -3px 0 -8px rgba(255, 255, 255, .75);
-}
-
-body::after {
-  left: auto;
-  right: 8%;
-  top: 18%;
-  transform: scale(.75);
-}
-
-button,
-input,
-select {
-  font: inherit;
-}
-
-button {
-  border: 0;
-  cursor: pointer;
-  color: var(--ink);
-  font-weight: 900;
-  transition: .2s ease;
-}
-
-button:hover {
-  transform: translateY(-3px);
-  filter: brightness(1.04);
-}
-
-button:active {
-  transform: translateY(0) scale(.98);
-}
-
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 4px solid rgba(22, 135, 209, .35);
-  outline-offset: 3px;
-}
-
-.app {
-  min-height: 100vh;
-  padding: 18px;
-}
-
-.screen {
-  display: none;
-  min-height: calc(100vh - 36px);
-  animation: screenIn .4s ease;
-}
-
-.screen.active {
-  display: block;
-}
-
-@keyframes screenIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.container,
-.game-screen,
-.results {
-  width: min(1180px, 100%);
-  margin: auto;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #fff;
-  text-shadow: 0 3px 0 rgba(0, 0, 0, .1);
-  font-weight: 1000;
-  letter-spacing: 1px;
-}
-
-.logo {
-  font-size: 2.2rem;
-  transform: rotate(-7deg);
-}
-
-.brand strong {
-  font-size: 1.5rem;
-}
-
-.card {
-  background: rgba(255, 255, 255, .95);
-  border: 3px solid rgba(255, 255, 255, .7);
-  border-radius: 28px;
-  box-shadow: var(--shadow);
-}
-
-.primary,
-.secondary,
-.small-btn {
-  border-radius: 16px;
-  padding: 15px 24px;
-  box-shadow: 0 6px 0 rgba(0, 0, 0, .12);
-}
-
-.primary {
-  background: var(--yellow);
-}
-
-.secondary {
-  background: #fff;
-  color: var(--blue-dark);
-}
-
-.small-btn {
-  padding: 9px 14px;
-  font-size: .85rem;
-  background: #eef8ff;
-  box-shadow: none;
-}
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: #fff;
-  color: var(--blue-dark);
-  font-weight: 900;
-  box-shadow: 0 5px 12px rgba(34, 75, 111, .12);
-}
-
-/* HOME */
-
-.home-wrap {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 35px;
-  align-items: center;
-  min-height: calc(100vh - 36px);
-}
-
-.home-copy h1 {
-  font-size: clamp(3.2rem, 8vw, 7.5rem);
-  line-height: .85;
-  margin: 18px 0;
-  color: #fff;
-  text-shadow:
-    0 7px 0 var(--blue-dark),
-    0 12px 22px rgba(0, 0, 0, .12);
-}
-
-.home-copy h1 span {
-  color: var(--yellow);
-}
-
-.home-copy h2 {
-  font-size: clamp(1.1rem, 2.5vw, 2rem);
-  color: #17486e;
-}
-
-.home-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 13px;
-  margin-top: 28px;
-}
-
-.home-note {
-  color: #17486e;
-  font-weight: bold;
-}
-
-.home-art {
-  position: relative;
-  min-height: 430px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.track-art {
-  position: relative;
-  width: 100%;
-  height: 255px;
-  transform: rotate(-5deg);
-  border: 12px solid #4b5969;
-  border-radius: 40px;
-  background: #707e8e;
-  box-shadow: 0 18px 0 rgba(0, 0, 0, .12);
-}
-
-.track-art::before {
-  content: "";
-  position: absolute;
-  inset: 44% 0 auto;
-  border-top: 8px dashed #fff;
-}
-
-.art-car {
-  position: absolute;
-  font-size: 4.2rem;
-  animation: carHop 1.8s infinite ease-in-out;
-}
-
-.art-car:nth-child(1) {
-  left: 13%;
-  top: 14%;
-}
-
-.art-car:nth-child(2) {
-  left: 39%;
-  top: 53%;
-  animation-delay: .3s;
-}
-
-.art-car:nth-child(3) {
-  left: 68%;
-  top: 17%;
-  animation-delay: .6s;
-}
-
-.flag {
-  position: absolute;
-  right: 4%;
-  top: 38%;
-  font-size: 4rem;
-}
-
-.trophy {
-  position: absolute;
-  font-size: 5rem;
-  right: 5%;
-  top: 2%;
-  animation: float 2.5s infinite;
-}
-
-@keyframes carHop {
-  50% {
-    transform: translateY(-10px) rotate(3deg);
-  }
-}
-
-@keyframes float {
-  50% {
-    transform: translateY(-13px) rotate(5deg);
-  }
-}
-
-/* SETTINGS AND LOBBY */
-
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.form-card,
-.lobby-card {
-  max-width: 900px;
-  margin: 4vh auto;
-  padding: clamp(22px, 4vw, 42px);
-}
-
-.form-card h2,
-.lobby-card h2 {
-  margin-top: 0;
-  font-size: 2rem;
-  color: var(--blue-dark);
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
-}
-
-.field label {
-  display: block;
-  font-weight: 900;
-  margin-bottom: 7px;
-}
-
-.field input,
-.field select {
-  width: 100%;
-  padding: 13px 14px;
-  border: 3px solid #d7edf9;
-  border-radius: 13px;
-  background: #f8fdff;
-  color: var(--ink);
-}
-
-.field.full {
-  grid-column: 1 / -1;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 25px;
-}
-
-.lobby-card {
-  text-align: center;
-}
-
-.game-code {
-  display: inline-block;
-  padding: 12px 28px;
-  border: 4px dashed var(--orange);
-  border-radius: 18px;
-  color: var(--orange);
-  font-size: 3rem;
-  letter-spacing: 8px;
-  background: #fff9e8;
-}
-
-.players-preview {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin: 24px 0;
-}
-
-.player-tile {
-  padding: 17px 8px;
-  border-radius: 18px;
-  background: #f2faff;
-  border-bottom: 5px solid var(--blue);
-}
-
-.player-tile .avatar {
-  display: block;
-  font-size: 2.4rem;
-}
-
-.lobby-actions {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.demo-note {
-  font-size: .9rem;
-  color: var(--muted);
-  margin: 18px 0 0;
-}
-
-/* COUNTDOWN */
-
-.countdown-wrap {
-  display: grid;
-  place-items: center;
-  min-height: calc(100vh - 36px);
-  text-align: center;
-}
-
-.countdown-number {
-  font-size: clamp(8rem, 25vw, 18rem);
-  color: #fff;
-  text-shadow: 0 12px 0 var(--blue-dark);
-  animation: countPop .9s ease;
-}
-
-@keyframes countPop {
-  0% {
-    transform: scale(2);
-    opacity: 0;
-  }
-
-  70% {
-    transform: scale(1);
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
-
-/* GAME HEADER */
-
-.game-header {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.game-header .center {
-  text-align: center;
-  font-size: 1.25rem;
-  font-weight: 1000;
-}
-
-.game-header .right {
-  text-align: right;
-}
-
-.timer {
-  display: inline-flex;
-  min-width: 105px;
-  justify-content: center;
-  padding: 10px 15px;
-  border-radius: 16px;
-  background: #fff;
-  color: var(--blue-dark);
-  font-size: 1.45rem;
-  box-shadow: var(--shadow);
-  font-weight: 1000;
-}
-
-.timer.warning {
-  color: #fff;
-  background: var(--red);
-  animation: blink .55s infinite alternate;
-}
-
-@keyframes blink {
-  to {
-    transform: scale(1.07);
-    box-shadow: 0 0 0 8px rgba(255, 98, 120, .22);
-  }
-}
-
-/* TRACK */
-
-.race-card {
-  padding: 16px;
-  background: rgba(255, 255, 255, .92);
-}
-
-.race-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 9px;
-}
-
-.race-title h2 {
-  margin: 0;
-  color: var(--blue-dark);
-  font-size: 1.35rem;
-}
-
-.race-track {
-  position: relative;
-  padding: 7px 12px;
-  border-radius: 20px;
-  background: #637487;
-  overflow: hidden;
-  border: 6px solid #465769;
-}
-
-.race-track::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 50px,
-      rgba(255, 255, 255, .12) 51px 53px
-    );
-}
-
-.finish-line {
-  position: absolute;
-  z-index: 1;
-  right: 3.5%;
-  top: 0;
-  bottom: 0;
-  width: 36px;
-  background:
-    repeating-linear-gradient(
-      45deg,
-      #fff 0 8px,
-      #222 8px 16px
-    );
-  opacity: .9;
-}
-
-.lane {
-  position: relative;
-  z-index: 2;
-  height: 55px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  border-bottom: 2px dashed rgba(255, 255, 255, .25);
-}
-
-.lane:last-of-type {
-  border-bottom: 0;
-}
-
-.lane.clickable {
-  cursor: pointer;
-  transition: background .2s ease, transform .2s ease;
-}
-
-.lane.clickable:hover {
-  background: rgba(255, 255, 255, .16);
-  transform: translateX(3px);
-}
-
-.lane.active-player {
-  background: rgba(255, 216, 77, .25);
-  outline: 3px solid var(--yellow);
-  outline-offset: -3px;
-}
-
-.lane.active-player .lane-name {
-  color: var(--yellow);
-  text-shadow: 0 2px 0 rgba(0, 0, 0, .25);
-}
-
-.lane.finished-player {
-  opacity: .6;
-  cursor: not-allowed;
-}
-
-.lane-name {
-  width: 100px;
-  color: #fff;
-  font-weight: 900;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.active-badge {
-  display: inline-block;
-  margin-left: 5px;
-  padding: 3px 7px;
-  border-radius: 999px;
-  background: var(--yellow);
-  color: var(--ink);
-  font-size: .65rem;
-  font-weight: 1000;
-}
-
-.progress-area {
-  position: relative;
-  flex: 1;
-  height: 100%;
-}
-
-.vehicle {
-  position: absolute;
-  left: 0;
-  top: 4px;
-  height: 45px;
-  width: 9%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  direction: ltr;
-  transform: scaleX(1);
-  transform-origin: center;
-  transition: left 1.1s cubic-bezier(.2, .85, .2, 1);
-  filter: drop-shadow(0 4px 1px rgba(0, 0, 0, .22));
-}
-
-.vehicle.moving {
-  animation: vehicleMoveRight .75s ease-in-out;
-}
-
-@keyframes vehicleMoveRight {
-  0% {
-    transform: translateX(-8px) scaleX(1);
-  }
-
-  45% {
-    transform: translateX(8px) translateY(-8px) rotate(-4deg) scaleX(1);
-  }
-
-  100% {
-    transform: translateX(0) scaleX(1);
-  }
-}
-
-.lane-finish {
-  width: 70px;
-  color: #fff;
-  font-size: .75rem;
-  text-align: center;
-  font-weight: 900;
-}
-
-.steps {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 90px 0 110px;
-  color: #d5e9f4;
-  font-size: .7rem;
-  font-weight: bold;
-}
-
-.steps span:last-child {
-  color: var(--yellow);
-}
-
-/* GAME CONTENT */
-
-.game-main {
-  display: grid;
-  grid-template-columns: 1fr 290px;
-  gap: 14px;
-  margin-top: 14px;
-}
-
-.question-card {
-  position: relative;
-  padding: 24px;
-  text-align: center;
-}
-
-.question-card h2 {
-  margin: 0 0 7px;
-  font-size: clamp(1.4rem, 3vw, 2.35rem);
-}
-
-.question-number {
-  color: var(--muted);
-  font-weight: bold;
-}
-
-.turn-info {
-  margin: 12px 0 0;
-  padding: 11px 14px;
-  border-radius: 14px;
-  background: #fff8d7;
-  color: #9a6500;
-  text-align: center;
-  font-weight: 900;
-}
-
-.turn-info strong {
-  color: var(--blue-dark);
-}
-
-.answers {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 13px;
-  margin-top: 20px;
-}
-
-.answer {
-  position: relative;
-  min-height: 65px;
-  padding: 13px 15px 13px 48px;
-  text-align: left;
-  background: #f4fbff;
-  border: 3px solid #d4effd;
-  border-radius: 16px;
-  font-weight: 900;
-}
-
-.answer .letter {
-  position: absolute;
-  left: 13px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 27px;
-  height: 27px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--blue);
-  color: #fff;
-}
-
-.answer.correct {
-  background: #c9f8df;
-  border-color: var(--green);
-}
-
-.answer.wrong {
-  background: #ffe0e4;
-  border-color: var(--red);
-}
-
-.answer:disabled {
-  cursor: not-allowed;
-  transform: none;
-}
-
-.answer-disabled {
-  opacity: .45;
-  cursor: not-allowed !important;
-}
-
-.feedback {
-  min-height: 45px;
-  margin-top: 15px;
-  font-size: 1.1rem;
-  font-weight: 900;
-}
-
-.feedback small {
-  display: block;
-  margin-top: 6px;
-}
-
-.feedback.good {
-  color: #119b67;
-}
-
-.feedback.bad {
-  color: #df405a;
-}
-
-.status-card {
-  padding: 18px;
-}
-
-.status-card h3 {
-  margin: 0 0 10px;
-  color: var(--blue-dark);
-}
-
-.rank-row {
-  display: grid;
-  grid-template-columns: 28px 1fr auto;
-  gap: 7px;
-  align-items: center;
-  padding: 9px 6px;
-  border-bottom: 2px solid #eef5f8;
-  font-weight: bold;
-}
-
-.rank-row:first-of-type {
-  background: #fff8d7;
-  border-radius: 10px;
-}
-
-.rank-avatar {
-  font-size: 1.35rem;
-}
-
-.rank-score {
-  color: var(--purple);
-  white-space: nowrap;
-}
-
-.progress-mini {
-  height: 7px;
-  background: #e4eff4;
-  border-radius: 99px;
-  margin-top: 4px;
-  overflow: hidden;
-}
-
-.progress-mini i {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--blue), var(--green));
-  border-radius: inherit;
-  transition: width .5s;
-}
-
-.combo {
-  min-height: 20px;
-  margin-top: 13px;
-  color: #e87519;
-  text-align: center;
-  font-weight: 1000;
-}
-
-.near-finish {
-  padding: 9px;
-  margin-top: 10px;
-  border-radius: 12px;
-  background: #fff1c5;
-  color: #b76c00;
-  text-align: center;
-  font-size: .85rem;
-  font-weight: bold;
-  animation: blink .8s infinite alternate;
-}
-
-.sound-toggle {
-  margin-top: 12px;
-}
-
-/* RESULTS */
-
-.results h1 {
-  text-align: center;
-  color: #fff;
-  font-size: clamp(2rem, 5vw, 4rem);
-  text-shadow: 0 5px 0 var(--blue-dark);
-}
-
-.podium {
-  display: flex;
-  justify-content: center;
-  align-items: end;
-  gap: 12px;
-  min-height: 220px;
-  margin: 20px 0;
-}
-
-.podium-place {
-  width: min(30%, 210px);
-  text-align: center;
-}
-
-.podium-avatar {
-  font-size: 3rem;
-}
-
-.podium-name {
-  padding: 10px 4px;
-  overflow: hidden;
-  border-radius: 12px 12px 0 0;
-  background: #fff;
-  font-weight: 1000;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.podium-block {
-  display: grid;
-  place-items: center;
-  color: #fff;
-  font-size: 1.7rem;
-  font-weight: 1000;
-}
-
-.place-1 .podium-block {
-  height: 130px;
-  background: #f5c842;
-}
-
-.place-2 .podium-block {
-  height: 95px;
-  background: #aeb9c5;
-}
-
-.place-3 .podium-block {
-  height: 70px;
-  background: #c98654;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 12px;
-}
-
-.stat-card {
-  padding: 16px;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: var(--shadow);
-}
-
-.stat-card h3 {
-  margin: 0 0 8px;
-  color: var(--blue-dark);
-}
-
-.stat-line {
-  display: flex;
-  justify-content: space-between;
-  margin: 4px 0;
-  color: var(--muted);
-}
-
-.result-actions {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin: 25px 0;
-}
-
-.review {
-  display: none;
-  margin-top: 20px;
-}
-
-.review.open {
-  display: block;
-}
-
-.review-item {
-  padding: 15px;
-  margin: 8px 0;
-  border-radius: 15px;
-  background: #fff;
-  cursor: pointer;
-  box-shadow: 0 5px 12px rgba(34, 75, 111, .08);
-}
-
-.review-detail {
-  display: none;
-  padding: 10px;
-  margin-top: 7px;
-  border-radius: 10px;
-  background: #f2faff;
-  font-size: .92rem;
-}
-
-.review-item.open .review-detail {
-  display: block;
-}
-
-/* MODAL AND EFFECTS */
-
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  display: none;
-  place-items: center;
-  padding: 18px;
-  background: rgba(19, 50, 77, .55);
-}
-
-.modal-backdrop.open {
-  display: grid;
-}
-
-.modal {
-  max-width: 520px;
-  padding: 28px;
-  border-radius: 25px;
-  background: #fff;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
-}
-
-.modal h2 {
-  margin-top: 0;
-  color: var(--blue-dark);
-}
-
-.modal li {
-  margin: 10px 0;
-}
-
-.modal-close {
-  float: right;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background: #edf7fc;
-}
-
-#confetti {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.confetti-piece {
-  position: absolute;
-  width: 10px;
-  height: 17px;
-  animation: fall 1.8s linear forwards;
-}
-
-@keyframes fall {
-  to {
-    transform: translateY(105vh) rotate(720deg);
-    opacity: 0;
-  }
-}
-
-.shake {
-  animation: shake .45s;
-}
-
-@keyframes shake {
-  25% {
-    transform: translateX(-8px);
-  }
-
-  50% {
-    transform: translateX(8px);
-  }
-
-  75% {
-    transform: translateX(-5px);
-  }
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 850px) {
-  .home-wrap {
-    grid-template-columns: 1fr;
-    padding: 25px 0;
-  }
-
-  .home-art {
-    order: -1;
-    min-height: 280px;
-  }
-
-  .game-header {
-    grid-template-columns: 1fr auto;
-  }
-
-  .game-header .center {
-    grid-column: 1 / -1;
-    grid-row: 1;
-  }
-
-  .game-header .right {
-    grid-column: 2;
-    grid-row: 2;
-  }
-
-  .game-header .left {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .game-main {
-    grid-template-columns: 1fr;
-  }
-
-  .status-card {
-    order: 2;
-  }
-}
-
-@media (max-width: 560px) {
-  .app {
-    padding: 10px;
-  }
-
-  .screen {
-    min-height: calc(100vh - 20px);
-  }
-
-  .form-grid,
-  .answers {
-    grid-template-columns: 1fr;
-  }
-
-  .field.full {
-    grid-column: auto;
-  }
-
-  .players-preview {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .game-header .brand strong {
-    font-size: 1.05rem;
-  }
-
-  .lane {
-    height: 48px;
-  }
-
-  .lane-name {
-    width: 72px;
-    font-size: .75rem;
-  }
-
-  .vehicle {
-    font-size: 1.6rem;
-  }
-
-  .lane-finish {
-    width: 35px;
-    font-size: 0;
-  }
-
-  .steps {
-    padding: 0 45px 0 73px;
-  }
-
-  .question-card {
-    padding: 17px 12px;
-  }
-
-  .podium {
-    min-height: 170px;
-  }
-
-  .podium-avatar {
-    font-size: 2rem;
-  }
-
-  .place-1 .podium-block {
-    height: 100px;
-  }
-
-  .place-2 .podium-block {
-    height: 73px;
-  }
-
-  .place-3 .podium-block {
-    height: 52px;
-  }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MATH RACE – Balap Matematika</title>
+  <style>
+    :root {
+      --ink: #17324d;
+      --muted: #647b91;
+      --blue: #39a9f4;
+      --blue-dark: #1687d1;
+      --yellow: #ffd84d;
+      --orange: #ff9d42;
+      --green: #27c889;
+      --red: #ff6278;
+      --purple: #8765e8;
+      --shadow: 0 14px 35px rgba(34, 75, 111, .16);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: "Trebuchet MS", Arial, sans-serif;
+      color: var(--ink);
+      overflow-x: hidden;
+      background: linear-gradient(180deg, #7bd5ff 0%, #b8edff 48%, #d8f7d0 48%, #9bdc83 100%);
+    }
+
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      width: 150px;
+      height: 55px;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, .75);
+      top: 9%;
+      left: 5%;
+      box-shadow:
+        35px 12px 0 -5px rgba(255,255,255,.75),
+        75px -3px 0 -8px rgba(255,255,255,.75);
+    }
+
+    body::after {
+      left: auto;
+      right: 8%;
+      top: 18%;
+      transform: scale(.75);
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      color: var(--ink);
+      font-weight: 900;
+      transition: .2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.04);
+    }
+
+    button:active {
+      transform: translateY(0) scale(.98);
+    }
+
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 4px solid rgba(22, 135, 209, .35);
+      outline-offset: 3px;
+    }
+
+    .app {
+      min-height: 100vh;
+      padding: 18px;
+    }
+
+    .screen {
+      display: none;
+      min-height: calc(100vh - 36px);
+      animation: screenIn .4s ease;
+    }
+
+    .screen.active { display: block; }
+
+    @keyframes screenIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .container, .game-screen, .results {
+      width: min(1180px, 100%);
+      margin: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      text-shadow: 0 3px 0 rgba(0,0,0,.1);
+      font-weight: 1000;
+      letter-spacing: 1px;
+    }
+
+    .logo { font-size: 2.2rem; transform: rotate(-7deg); }
+    .brand strong { font-size: 1.5rem; }
+
+    .card {
+      background: rgba(255,255,255,.95);
+      border: 3px solid rgba(255,255,255,.7);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .primary, .secondary, .small-btn {
+      border-radius: 16px;
+      padding: 15px 24px;
+      box-shadow: 0 6px 0 rgba(0,0,0,.12);
+    }
+
+    .primary { background: var(--yellow); }
+    .secondary { background: #fff; color: var(--blue-dark); }
+
+    .small-btn {
+      padding: 9px 14px;
+      font-size: .85rem;
+      background: #eef8ff;
+      box-shadow: none;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--blue-dark);
+      font-weight: 900;
+      box-shadow: 0 5px 12px rgba(34, 75, 111, .12);
+    }
+
+    .home-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 35px;
+      align-items: center;
+      min-height: calc(100vh - 36px);
+    }
+
+    .home-copy h1 {
+      font-size: clamp(3.2rem, 8vw, 7.5rem);
+      line-height: .85;
+      margin: 18px 0;
+      color: #fff;
+      text-shadow: 0 7px 0 var(--blue-dark), 0 12px 22px rgba(0,0,0,.12);
+    }
+
+    .home-copy h1 span { color: var(--yellow); }
+
+    .home-copy h2 {
+      font-size: clamp(1.1rem, 2.5vw, 2rem);
+      color: #17486e;
+    }
+
+    .home-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 13px;
+      margin-top: 28px;
+    }
+
+    .home-note { color: #17486e; font-weight: bold; }
+
+    .home-art {
+      position: relative;
+      min-height: 430px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .track-art {
+      position: relative;
+      width: 100%;
+      height: 255px;
+      transform: rotate(-5deg);
+      border: 12px solid #4b5969;
+      border-radius: 40px;
+      background: #707e8e;
+      box-shadow: 0 18px 0 rgba(0,0,0,.12);
+    }
+
+    .track-art::before {
+      content: "";
+      position: absolute;
+      inset: 44% 0 auto;
+      border-top: 8px dashed #fff;
+    }
+
+    .art-car {
+      position: absolute;
+      font-size: 4.2rem;
+      animation: carHop 1.8s infinite ease-in-out;
+    }
+
+    .art-car:nth-child(1) { left: 13%; top: 14%; }
+    .art-car:nth-child(2) { left: 39%; top: 53%; animation-delay: .3s; }
+    .art-car:nth-child(3) { left: 68%; top: 17%; animation-delay: .6s; }
+
+    .flag {
+      position: absolute;
+      right: 4%;
+      top: 38%;
+      font-size: 4rem;
+    }
+
+    .trophy {
+      position: absolute;
+      font-size: 5rem;
+      right: 5%;
+      top: 2%;
+      animation: float 2.5s infinite;
+    }
+
+    @keyframes carHop {
+      50% { transform: translateY(-10px) rotate(3deg); }
+    }
+
+    @keyframes float {
+      50% { transform: translateY(-13px) rotate(5deg); }
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .form-card, .lobby-card {
+      max-width: 900px;
+      margin: 4vh auto;
+      padding: clamp(22px, 4vw, 42px);
+    }
+
+    .form-card h2, .lobby-card h2 {
+      margin-top: 0;
+      font-size: 2rem;
+      color: var(--blue-dark);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .field label {
+      display: block;
+      font-weight: 900;
+      margin-bottom: 7px;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 3px solid #d7edf9;
+      border-radius: 13px;
+      background: #f8fdff;
+      color: var(--ink);
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 25px;
+    }
+
+    .lobby-card { text-align: center; }
+
+    .game-code {
+      display: inline-block;
+      padding: 12px 28px;
+      border: 4px dashed var(--orange);
+      border-radius: 18px;
+      color: var(--orange);
+      font-size: 3rem;
+      letter-spacing: 8px;
+      background: #fff9e8;
+    }
+
+    .players-preview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .player-tile {
+      padding: 17px 8px;
+      border-radius: 18px;
+      background: #f2faff;
+      border-bottom: 5px solid var(--blue);
+    }
+
+    .player-tile .avatar {
+      display: block;
+      font-size: 2.4rem;
+    }
+
+    .lobby-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .demo-note {
+      font-size: .9rem;
+      color: var(--muted);
+      margin: 18px 0 0;
+    }
+
+    .countdown-wrap {
+      display: grid;
+      place-items: center;
+      min-height: calc(100vh - 36px);
+      text-align: center;
+    }
+
+    .countdown-number {
+      font-size: clamp(8rem, 25vw, 18rem);
+      color: #fff;
+      text-shadow: 0 12px 0 var(--blue-dark);
+      animation: countPop .9s ease;
+    }
+
+    @keyframes countPop {
+      0% { transform: scale(2); opacity: 0; }
+      70% { transform: scale(1); }
+      100% { opacity: 1; }
+    }
+
+    .game-header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .game-header .center {
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 1000;
+    }
+
+    .game-header .right { text-align: right; }
+
+    .timer {
+      display: inline-flex;
+      min-width: 105px;
+      justify-content: center;
+      padding: 10px 15px;
+      border-radius: 16px;
+      background: #fff;
+      color: var(--blue-dark);
+      font-size: 1.45rem;
+      box-shadow: var(--shadow);
+      font-weight: 1000;
+    }
+
+    .timer.warning {
+      color: #fff;
+      background: var(--red);
+      animation: blink .55s infinite alternate;
+    }
+
+    @keyframes blink {
+      to {
+        transform: scale(1.07);
+        box-shadow: 0 0 0 8px rgba(255, 98, 120, .22);
+      }
+    }
+
+    .race-card {
+      padding: 16px;
+      background: rgba(255,255,255,.92);
+    }
+
+    .race-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 9px;
+    }
+
+    .race-title h2 {
+      margin: 0;
+      color: var(--blue-dark);
+      font-size: 1.35rem;
+    }
+
+    .race-track {
+      position: relative;
+      padding: 7px 12px;
+      border-radius: 20px;
+      background: #637487;
+      overflow: hidden;
+      border: 6px solid #465769;
+    }
+
+    .race-track::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent 0 50px,
+        rgba(255,255,255,.12) 51px 53px
+      );
+    }
+
+    .finish-line {
+      position: absolute;
+      z-index: 1;
+      right: 3.5%;
+      top: 0;
+      bottom: 0;
+      width: 36px;
+      background: repeating-linear-gradient(45deg, #fff 0 8px, #222 8px 16px);
+      opacity: .9;
+    }
+
+    .lane {
+      position: relative;
+      z-index: 2;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border-bottom: 2px dashed rgba(255,255,255,.25);
+    }
+
+    .lane:last-of-type { border-bottom: 0; }
+
+    .lane.clickable {
+      cursor: pointer;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .lane.clickable:hover {
+      background: rgba(255,255,255,.16);
+      transform: translateX(3px);
+    }
+
+    .lane.active-player {
+      background: rgba(255, 216, 77, .25);
+      outline: 3px solid var(--yellow);
+      outline-offset: -3px;
+    }
+
+    .lane.active-player .lane-name {
+      color: var(--yellow);
+      text-shadow: 0 2px 0 rgba(0,0,0,.25);
+    }
+
+    .lane.finished-player {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .lane-name {
+      width: 100px;
+      color: #fff;
+      font-weight: 900;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .active-badge {
+      display: inline-block;
+      margin-left: 5px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: var(--yellow);
+      color: var(--ink);
+      font-size: .65rem;
+      font-weight: 1000;
+    }
+
+    .progress-area {
+      position: relative;
+      flex: 1;
+      height: 100%;
+    }
+
+    .vehicle {
+      position: absolute;
+      left: 0;
+      top: 4px;
+      height: 45px;
+      width: 9%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      direction: ltr;
+      transform: scaleX(1);
+      transform-origin: center;
+      transition: left 1.1s cubic-bezier(.2, .85, .2, 1);
+      filter: drop-shadow(0 4px 1px rgba(0,0,0,.22));
+    }
+
+    .vehicle.moving {
+      animation: vehicleMoveRight .75s ease-in-out;
+    }
+
+    @keyframes vehicleMoveRight {
+      0% { transform: translateX(-8px) scaleX(1); }
+      45% { transform: translateX(8px) translateY(-8px) rotate(-4deg) scaleX(1); }
+      100% { transform: translateX(0) scaleX(1); }
+    }
+
+    .lane-finish {
+      width: 70px;
+      color: #fff;
+      font-size: .75rem;
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 90px 0 110px;
+      color: #d5e9f4;
+      font-size: .7rem;
+      font-weight: bold;
+    }
+
+    .steps span:last-child { color: var(--yellow); }
+
+    .game-main {
+      display: grid;
+      grid-template-columns: 1fr 290px;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .question-card {
+      position: relative;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .question-card h2 {
+      margin: 0 0 7px;
+      font-size: clamp(1.4rem, 3vw, 2.35rem);
+    }
+
+    .question-number { color: var(--muted); font-weight: bold; }
+
+    .turn-info {
+      margin: 12px 0 0;
+      padding: 11px 14px;
+      border-radius: 14px;
+      background: #fff8d7;
+      color: #9a6500;
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .turn-info strong { color: var(--blue-dark); }
+
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 13px;
+      margin-top: 20px;
+    }
+
+    .answer {
+      position: relative;
+      min-height: 65px;
+      padding: 13px 15px 13px 48px;
+      text-align: left;
+      background: #f4fbff;
+      border: 3px solid #d4effd;
+      border-radius: 16px;
+      font-weight: 900;
+    }
+
+    .answer .letter {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 27px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .answer.correct { background: #c9f8df; border-color: var(--green); }
+    .answer.wrong { background: #ffe0e4; border-color: var(--red); }
+
+    .answer:disabled {
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .answer-disabled {
+      opacity: .45;
+      cursor: not-allowed !important;
+    }
+
+    .feedback {
+      min-height: 45px;
+      margin-top: 15px;
+      font-size: 1.1rem;
+      font-weight: 900;
+    }
+
+    .feedback small { display: block; margin-top: 6px; }
+    .feedback.good { color: #119b67; }
+    .feedback.bad { color: #df405a; }
+
+    .status-card { padding: 18px; }
+    .status-card h3 {
+      margin: 0 0 10px;
+      color: var(--blue-dark);
+    }
+
+    .rank-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 7px;
+      align-items: center;
+      padding: 9px 6px;
+      border-bottom: 2px solid #eef5f8;
+      font-weight: bold;
+    }
+
+    .rank-row:first-of-type {
+      background: #fff8d7;
+      border-radius: 10px;
+    }
+
+    .rank-avatar { font-size: 1.35rem; }
+    .rank-score { color: var(--purple); white-space: nowrap; }
+
+    .progress-mini {
+      height: 7px;
+      background: #e4eff4;
+      border-radius: 99px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+
+    .progress-mini i {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      border-radius: inherit;
+      transition: width .5s;
+    }
+
+    .combo {
+      min-height: 20px;
+      margin-top: 13px;
+      color: #e87519;
+      text-align: center;
+      font-weight: 1000;
+    }
+
+    .near-finish {
+      padding: 9px;
+      margin-top: 10px;
+      border-radius: 12px;
+      background: #fff1c5;
+      color: #b76c00;
+      text-align: center;
+      font-size: .85rem;
+      font-weight: bold;
+      animation: blink .8s infinite alternate;
+    }
+
+    .sound-toggle { margin-top: 12px; }
+
+    .results h1 {
+      text-align: center;
+      color: #fff;
+      font-size: clamp(2rem, 5vw, 4rem);
+      text-shadow: 0 5px 0 var(--blue-dark);
+    }
+
+    .podium {
+      display: flex;
+      justify-content: center;
+      align-items: end;
+      gap: 12px;
+      min-height: 220px;
+      margin: 20px 0;
+    }
+
+    .podium-place {
+      width: min(30%, 210px);
+      text-align: center;
+    }
+
+    .podium-avatar { font-size: 3rem; }
+
+    .podium-name {
+      padding: 10px 4px;
+      overflow: hidden;
+      border-radius: 12px 12px 0 0;
+      background: #fff;
+      font-weight: 1000;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .podium-block {
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 1.7rem;
+      font-weight: 1000;
+    }
+
+    .place-1 .podium-block { height: 130px; background: #f5c842; }
+    .place-2 .podium-block { height: 95px; background: #aeb9c5; }
+    .place-3 .podium-block { height: 70px; background: #c98654; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
+    .stat-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card h3 {
+      margin: 0 0 8px;
+      color: var(--blue-dark);
+    }
+
+    .stat-line {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+      color: var(--muted);
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 25px 0;
+    }
+
+    .review { display: none; margin-top: 20px; }
+    .review.open { display: block; }
+
+    .review-item {
+      padding: 15px;
+      margin: 8px 0;
+      border-radius: 15px;
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 5px 12px rgba(34, 75, 111, .08);
+    }
+
+    .review-detail {
+      display: none;
+      padding: 10px;
+      margin-top: 7px;
+      border-radius: 10px;
+      background: #f2faff;
+      font-size: .92rem;
+    }
+
+    .review-item.open .review-detail { display: block; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(19, 50, 77, .55);
+    }
+
+    .modal-backdrop.open { display: grid; }
+
+    .modal {
+      max-width: 520px;
+      padding: 28px;
+      border-radius: 25px;
+      background: #fff;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+
+    .modal h2 { margin-top: 0; color: var(--blue-dark); }
+    .modal li { margin: 10px 0; }
+
+    .modal-close {
+      float: right;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #edf7fc;
+    }
+
+    #confetti {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 17px;
+      animation: fall 1.8s linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(105vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .shake { animation: shake .45s; }
+
+    @keyframes shake {
+      25% { transform: translateX(-8px); }
+      50% { transform: translateX(8px); }
+      75% { transform: translateX(-5px); }
+    }
+
+    @media (max-width: 850px) {
+      .home-wrap { grid-template-columns: 1fr; padding: 25px 0; }
+      .home-art { order: -1; min-height: 280px; }
+
+      .game-header { grid-template-columns: 1fr auto; }
+      .game-header .center { grid-column: 1 / -1; grid-row: 1; }
+      .game-header .right { grid-column: 2; grid-row: 2; }
+      .game-header .left { grid-column: 1; grid-row: 2; }
+
+      .game-main { grid-template-columns: 1fr; }
+      .status-card { order: 2; }
+    }
+
+    @media (max-width: 560px) {
+      .app { padding: 10px; }
+      .screen { min-height: calc(100vh - 20px); }
+
+      .form-grid, .answers { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .players-preview { grid-template-columns: repeat(2, 1fr); }
+
+      .game-header .brand strong { font-size: 1.05rem; }
+
+      .lane { height: 48px; }
+      .lane-name { width: 72px; font-size: .75rem; }
+      .vehicle { font-size: 1.6rem; }
+      .lane-finish { width: 35px; font-size: 0; }
+      .steps { padding: 0 45px 0 73px; }
+
+      .question-card { padding: 17px 12px; }
+      .podium { min-height: 170px; }
+      .podium-avatar { font-size: 2rem; }
+      .place-1 .podium-block { height: 100px; }
+      .place-2 .podium-block { height: 73px; }
+      .place-3 .podium-block { height: 52px; }
+    }
+  </style>
 </head>
 
 <body>
-<div class="app">
+  <div class="app">
 
-  <!-- HOME -->
-  <section id="homeScreen" class="screen active">
-    <div class="container home-wrap">
-      <div class="home-copy">
-        <div class="brand">
-          <span class="logo">🏁</span>
-          <strong>MATH RACE</strong>
+    <section id="homeScreen" class="screen active">
+      <div class="container home-wrap">
+        <div class="home-copy">
+          <div class="brand">
+            <span class="logo">🏁</span>
+            <strong>MATH RACE</strong>
+          </div>
+
+          <h1>
+            Balap<br>
+            <span>Matematika!</span>
+          </h1>
+
+          <h2>“Cepat Menjawab, Raih Posisi Terdepan!”</h2>
+
+          <div class="home-buttons">
+            <button class="primary" id="startHomeBtn">🚦 MULAI GAME</button>
+            <button class="secondary" id="howToBtn">💡 CARA BERMAIN</button>
+          </div>
+
+          <p class="home-note">🏫 Mode Manual — guru memilih pemain yang mendapat giliran.</p>
         </div>
 
-        <h1>
-          Balap<br>
-          <span>Matematika!</span>
-        </h1>
-
-        <h2>
-          “Cepat Menjawab, Raih Posisi Terdepan!”
-        </h2>
-
-        <div class="home-buttons">
-          <button class="primary" id="startHomeBtn">
-            🚦 MULAI GAME
-          </button>
-
-          <button class="secondary" id="howToBtn">
-            💡 CARA BERMAIN
-          </button>
-        </div>
-
-        <p class="home-note">
-          🏫 Mode Manual — guru memilih pemain yang mendapat giliran.
-        </p>
-      </div>
-
-      <div class="home-art">
-        <div class="trophy">🏆</div>
-
-        <div class="track-art">
-          <div class="art-car">🏎️</div>
-          <div class="art-car">🚙</div>
-          <div class="art-car">🚗</div>
-          <div class="flag">🏁</div>
+        <div class="home-art">
+          <div class="trophy">🏆</div>
+          <div class="track-art">
+            <div class="art-car">🏎️</div>
+            <div class="art-car">🚙</div>
+            <div class="art-car">🚗</div>
+            <div class="flag">🏁</div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- SETTINGS -->
-  <section id="settingsScreen" class="screen">
-    <div class="container">
-      <div class="topbar">
-        <div class="brand">
-          <span class="logo">🏁</span>
-          <strong>PENGATURAN BALAPAN</strong>
+    <section id="settingsScreen" class="screen">
+      <div class="container">
+        <div class="topbar">
+          <div class="brand">
+            <span class="logo">🏁</span>
+            <strong>PENGATURAN BALAPAN</strong>
+          </div>
+          <button class="secondary" id="settingsBackBtn">← Kembali</button>
         </div>
 
-        <button class="secondary" id="settingsBackBtn">
-          ← Kembali
-        </button>
-      </div>
+        <div class="card form-card">
+          <h2>⚙️ Siapkan Pertandingan</h2>
 
-      <div class="card form-card">
-        <h2>⚙️ Siapkan Pertandingan</h2>
+          <div class="form-grid">
+            <div class="field full">
+              <label for="gameName">Nama permainan</label>
+              <input id="gameName" value="Math Race" />
+            </div>
 
-        <div class="form-grid">
-          <div class="field full">
-            <label for="gameName">Nama permainan</label>
-            <input id="gameName" value="Math Race">
+            <div class="field">
+              <label for="playerCount">Jumlah pemain</label>
+              <select id="playerCount">
+                <option value="2">2 pemain</option>
+                <option value="3">3 pemain</option>
+                <option value="4" selected>4 pemain</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="questionCount">Jumlah soal</label>
+              <select id="questionCount">
+                <option value="5">5 soal</option>
+                <option value="10" selected>10 soal</option>
+                <option value="15">15 soal</option>
+                <option value="20">20 soal</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="timeLimit">Waktu per soal</label>
+              <select id="timeLimit">
+                <option value="10">10 detik</option>
+                <option value="15" selected>15 detik</option>
+                <option value="20">20 detik</option>
+                <option value="30">30 detik</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="category">Materi</label>
+              <select id="category">
+                <option value="campuran">Campuran</option>
+                <option value="penjumlahan">Penjumlahan</option>
+                <option value="pengurangan">Pengurangan</option>
+                <option value="perkalian">Perkalian</option>
+                <option value="pembagian">Pembagian</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="difficulty">Kesulitan</label>
+              <select id="difficulty">
+                <option value="campuran">Campuran</option>
+                <option value="mudah">Mudah</option>
+                <option value="sedang">Sedang</option>
+                <option value="sulit">Sulit</option>
+              </select>
+            </div>
           </div>
 
-          <div class="field">
-            <label for="playerCount">Jumlah pemain</label>
-            <select id="playerCount">
-              <option value="2">2 pemain</option>
-              <option value="3">3 pemain</option>
-              <option value="4" selected>4 pemain</option>
-            </select>
+          <div class="form-actions">
+            <button class="primary" id="toLobbyBtn">🚦 MULAI LOBBY</button>
           </div>
-
-          <div class="field">
-            <label for="questionCount">Jumlah soal</label>
-            <select id="questionCount">
-              <option value="5">5 soal</option>
-              <option value="10" selected>10 soal</option>
-              <option value="15">15 soal</option>
-              <option value="20">20 soal</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="timeLimit">Waktu per soal</label>
-            <select id="timeLimit">
-              <option value="10">10 detik</option>
-              <option value="15" selected>15 detik</option>
-              <option value="20">20 detik</option>
-              <option value="30">30 detik</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="category">Materi</label>
-            <select id="category">
-              <option value="campuran">Campuran</option>
-              <option value="penjumlahan">Penjumlahan</option>
-              <option value="pengurangan">Pengurangan</option>
-              <option value="perkalian">Perkalian</option>
-              <option value="pembagian">Pembagian</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="difficulty">Kesulitan</label>
-            <select id="difficulty">
-              <option value="campuran">Campuran</option>
-              <option value="mudah">Mudah</option>
-              <option value="sedang">Sedang</option>
-              <option value="sulit">Sulit</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button class="primary" id="toLobbyBtn">
-            🚦 MULAI LOBBY
-          </button>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- LOBBY -->
-  <section id="lobbyScreen" class="screen">
-    <div class="container">
-      <div class="topbar">
-        <div class="brand">
-          <span class="logo">🏁</span>
-          <strong>LOBBY MATH RACE</strong>
+    <section id="lobbyScreen" class="screen">
+      <div class="container">
+        <div class="topbar">
+          <div class="brand">
+            <span class="logo">🏁</span>
+            <strong>LOBBY MATH RACE</strong>
+          </div>
+          <button class="secondary" id="lobbyBackBtn">← Pengaturan</button>
         </div>
 
-        <button class="secondary" id="lobbyBackBtn">
-          ← Pengaturan
-        </button>
-      </div>
+        <div class="card lobby-card">
+          <h2 id="lobbyGameName">MATH RACE</h2>
+          <p>KODE GAME</p>
+          <div class="game-code">7429</div>
+          <div class="players-preview" id="playersPreview"></div>
 
-      <div class="card lobby-card">
-        <h2 id="lobbyGameName">MATH RACE</h2>
-
-        <p>KODE GAME</p>
-
-        <div class="game-code">7429</div>
-
-        <div class="players-preview" id="playersPreview"></div>
-
-        <div class="lobby-actions">
-          <button class="secondary" id="addPlayerBtn">
-            ➕ TAMBAH PEMAIN
-          </button>
-
-          <button class="primary" id="startRaceBtn">
-            🏁 MULAI BALAPAN
-          </button>
-        </div>
-
-        <p class="demo-note">
-          Mode Manual — klik nama pemain pada lintasan untuk memberikan giliran menjawab.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- COUNTDOWN -->
-  <section id="countdownScreen" class="screen">
-    <div class="countdown-wrap">
-      <div>
-        <div class="brand" style="justify-content:center">
-          <span class="logo">🏁</span>
-          <strong>MATH RACE</strong>
-        </div>
-
-        <div id="countdownNumber" class="countdown-number">3</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- GAME -->
-  <section id="gameScreen" class="screen">
-    <div class="game-screen">
-
-      <header class="game-header">
-        <div class="brand left">
-          <span class="logo">🏁</span>
-          <strong id="gameTitle">MATH RACE</strong>
-        </div>
-
-        <div class="center" id="questionCounter">
-          SOAL 1/10
-        </div>
-
-        <div class="right">
-          <span class="timer" id="timer">
-            Pilih pemain
-          </span>
-        </div>
-      </header>
-
-      <section class="card race-card">
-        <div class="race-title">
-          <h2>🏎️ LINTASAN BALAP</h2>
-          <span class="pill" id="trackMessage">
-            PILIH PEMAIN
-          </span>
-        </div>
-
-        <div class="race-track" id="raceTrack">
-          <div class="finish-line" title="Finish"></div>
-        </div>
-
-        <div class="steps">
-          <span>START</span>
-          <span>1</span>
-          <span>2</span>
-          <span>3</span>
-          <span>4</span>
-          <span>5</span>
-          <span>6</span>
-          <span>7</span>
-          <span>8</span>
-          <span>9</span>
-          <span>🏁</span>
-        </div>
-      </section>
-
-      <div class="game-main">
-        <section class="card question-card" id="questionCard">
-          <div class="question-number" id="questionCategory">
-            SOAL MATEMATIKA
+          <div class="lobby-actions">
+            <button class="secondary" id="addPlayerBtn">➕ TAMBAH PEMAIN</button>
+            <button class="primary" id="startRaceBtn">🏁 MULAI BALAPAN</button>
           </div>
 
-          <h2 id="questionText">
-            Bersiap...
-          </h2>
+          <p class="demo-note">
+            Mode Manual — klik nama pemain pada lintasan untuk memberikan giliran menjawab.
+          </p>
+        </div>
+      </div>
+    </section>
 
-          <div class="turn-info" id="turnInfo">
-            👆 Klik nama pemain pada lintasan untuk memilih pemain yang menjawab.
+    <section id="countdownScreen" class="screen">
+      <div class="countdown-wrap">
+        <div>
+          <div class="brand" style="justify-content:center">
+            <span class="logo">🏁</span>
+            <strong>MATH RACE</strong>
+          </div>
+          <div id="countdownNumber" class="countdown-number">3</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="game-screen">
+        <header class="game-header">
+          <div class="brand left">
+            <span class="logo">🏁</span>
+            <strong id="gameTitle">MATH RACE</strong>
           </div>
 
-          <div class="answers" id="answers"></div>
+          <div class="center" id="questionCounter">SOAL 1/10</div>
 
-          <div class="feedback" id="feedback" aria-live="polite"></div>
+          <div class="right">
+            <span class="timer" id="timer">Pilih pemain</span>
+          </div>
+        </header>
+
+        <section class="card race-card">
+          <div class="race-title">
+            <h2>🏎️ LINTASAN BALAP</h2>
+            <span class="pill" id="trackMessage">PILIH PEMAIN</span>
+          </div>
+
+          <div class="race-track" id="raceTrack">
+            <div class="finish-line" title="Finish"></div>
+          </div>
+
+          <div class="steps">
+            <span>START</span>
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>🏁</span>
+          </div>
         </section>
 
-        <aside class="card status-card">
-          <h3>🏆 RANKING SEMENTARA</h3>
+        <div class="game-main">
+          <section class="card question-card" id="questionCard">
+            <div class="question-number" id="questionCategory">SOAL MATEMATIKA</div>
+            <h2 id="questionText">Bersiap...</h2>
 
-          <div id="ranking"></div>
+            <div class="turn-info" id="turnInfo">
+              👆 Klik nama pemain pada lintasan untuk memilih pemain yang menjawab.
+            </div>
 
-          <div class="combo" id="comboText"></div>
+            <div class="answers" id="answers"></div>
+            <div class="feedback" id="feedback" aria-live="polite"></div>
+          </section>
 
-          <div id="nearFinish" class="near-finish" style="display:none">
-            🚨 TINGGAL 1 LANGKAH LAGI!
-          </div>
-
-          <button class="small-btn sound-toggle" id="soundBtn">
-            🔊 SOUND ON
-          </button>
-        </aside>
+          <aside class="card status-card">
+            <h3>🏆 RANKING SEMENTARA</h3>
+            <div id="ranking"></div>
+            <div class="combo" id="comboText"></div>
+            <div id="nearFinish" class="near-finish" style="display:none">🚨 TINGGAL 1 LANGKAH LAGI!</div>
+            <button class="small-btn sound-toggle" id="soundBtn">🔊 SOUND ON</button>
+          </aside>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- RESULTS -->
-  <section id="resultsScreen" class="screen">
-    <div class="results">
-      <div class="brand" style="justify-content:center;margin-top:15px">
-        <span class="logo">🏁</span>
-        <strong>HASIL PERTANDINGAN</strong>
+    <section id="resultsScreen" class="screen">
+      <div class="results">
+        <div class="brand" style="justify-content:center;margin-top:15px">
+          <span class="logo">🏁</span>
+          <strong>HASIL PERTANDINGAN</strong>
+        </div>
+
+        <h1>🏆 HASIL MATH RACE</h1>
+
+        <div class="podium" id="podium"></div>
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <div class="result-actions">
+          <button class="primary" id="reviewBtn">📚 REVIEW SOAL</button>
+          <button class="secondary" id="restartBtn">🔄 MAIN LAGI</button>
+        </div>
+
+        <div class="review" id="review"></div>
       </div>
-
-      <h1>🏆 HASIL MATH RACE</h1>
-
-      <div class="podium" id="podium"></div>
-
-      <div class="stats-grid" id="statsGrid"></div>
-
-      <div class="result-actions">
-        <button class="primary" id="reviewBtn">
-          📚 REVIEW SOAL
-        </button>
-
-        <button class="secondary" id="restartBtn">
-          🔄 MAIN LAGI
-        </button>
-      </div>
-
-      <div class="review" id="review"></div>
-    </div>
-  </section>
-</div>
-
-<div id="confetti"></div>
-
-<!-- MODAL CARA BERMAIN -->
-<div class="modal-backdrop" id="howModal">
-  <div class="modal">
-    <button class="modal-close" id="closeModal">×</button>
-
-    <h2>💡 Cara Bermain</h2>
-
-    <ol>
-      <li>Baca soal matematika pada kartu soal.</li>
-      <li>Klik nama pemain yang mendapat giliran.</li>
-      <li>Pemain yang dipilih menjawab soal.</li>
-      <li>Jawaban benar membuat pemain maju 1 langkah.</li>
-      <li>Jawaban salah membuat pemain mundur 1 langkah.</li>
-      <li>Jika salah, pilih pemain lain untuk melanjutkan.</li>
-      <li>Raih posisi terdepan dan capai garis finish!</li>
-    </ol>
-
-    <button class="primary" id="modalStartBtn">
-      🚦 SIAP BALAP!
-    </button>
+    </section>
   </div>
-</div>
 
-<script>
-"use strict";
+  <div id="confetti"></div>
 
-/* =========================
-   BANK SOAL
-========================= */
+  <div class="modal-backdrop" id="howModal">
+    <div class="modal">
+      <button class="modal-close" id="closeModal">×</button>
+      <h2>💡 Cara Bermain</h2>
 
-const QUESTION_BANK = [
-  {
-    id: 1,
-    category: "penjumlahan",
-    difficulty: "mudah",
-    question: "12 + 8 = ?",
-    options: ["18", "20", "22", "24"],
-    answer: 1,
-    explanation: "12 + 8 = 20"
-  },
-  {
-    id: 2,
-    category: "penjumlahan",
-    difficulty: "mudah",
-    question: "25 + 17 = ?",
-    options: ["40", "41", "42", "43"],
-    answer: 2,
-    explanation: "25 + 17 = 42"
-  },
-  {
-    id: 3,
-    category: "penjumlahan",
-    difficulty: "sedang",
-    question: "136 + 245 = ?",
-    options: ["371", "381", "391", "401"],
-    answer: 1,
-    explanation: "136 + 245 = 381"
-  },
-  {
-    id: 4,
-    category: "penjumlahan",
-    difficulty: "sulit",
-    question: "487 + 356 = ?",
-    options: ["833", "843", "853", "863"],
-    answer: 1,
-    explanation: "487 + 356 = 843"
-  },
-  {
-    id: 5,
-    category: "penjumlahan",
-    difficulty: "sedang",
-    question: "75 + 68 + 27 = ?",
-    options: ["160", "170", "180", "190"],
-    answer: 1,
-    explanation: "75 + 68 + 27 = 170"
-  },
-  {
-    id: 6,
-    category: "penjumlahan",
-    difficulty: "mudah",
-    question: "45 + 36 = ?",
-    options: ["71", "81", "91", "101"],
-    answer: 1,
-    explanation: "45 + 36 = 81"
-  },
-  {
-    id: 7,
-    category: "pengurangan",
-    difficulty: "mudah",
-    question: "30 − 12 = ?",
-    options: ["16", "18", "20", "22"],
-    answer: 1,
-    explanation: "30 − 12 = 18"
-  },
-  {
-    id: 8,
-    category: "pengurangan",
-    difficulty: "mudah",
-    question: "56 − 29 = ?",
-    options: ["25", "27", "29", "31"],
-    answer: 1,
-    explanation: "56 − 29 = 27"
-  },
-  {
-    id: 9,
-    category: "pengurangan",
-    difficulty: "sedang",
-    question: "400 − 175 = ?",
-    options: ["215", "225", "235", "245"],
-    answer: 1,
-    explanation: "400 − 175 = 225"
-  },
-  {
-    id: 10,
-    category: "pengurangan",
-    difficulty: "sulit",
-    question: "923 − 487 = ?",
-    options: ["426", "436", "446", "456"],
-    answer: 1,
-    explanation: "923 − 487 = 436"
-  },
-  {
-    id: 11,
-    category: "pengurangan",
-    difficulty: "sedang",
-    question: "850 − 275 − 125 = ?",
-    options: ["430", "440", "450", "460"],
-    answer: 2,
-    explanation: "850 − 275 − 125 = 450"
-  },
-  {
-    id: 12,
-    category: "pengurangan",
-    difficulty: "mudah",
-    question: "91 − 47 = ?",
-    options: ["34", "44", "54", "64"],
-    answer: 1,
-    explanation: "91 − 47 = 44"
-  },
-  {
-    id: 13,
-    category: "perkalian",
-    difficulty: "mudah",
-    question: "6 × 7 = ?",
-    options: ["36", "42", "48", "56"],
-    answer: 1,
-    explanation: "6 × 7 = 42"
-  },
-  {
-    id: 14,
-    category: "perkalian",
-    difficulty: "mudah",
-    question: "9 × 8 = ?",
-    options: ["64", "72", "81", "88"],
-    answer: 1,
-    explanation: "9 × 8 = 72"
-  },
-  {
-    id: 15,
-    category: "perkalian",
-    difficulty: "sedang",
-    question: "27 × 4 = ?",
-    options: ["96", "108", "112", "120"],
-    answer: 1,
-    explanation: "27 × 4 = 108"
-  },
-  {
-    id: 16,
-    category: "perkalian",
-    difficulty: "sulit",
-    question: "36 × 12 = ?",
-    options: ["422", "432", "442", "452"],
-    answer: 1,
-    explanation: "36 × 12 = 432"
-  },
-  {
-    id: 17,
-    category: "perkalian",
-    difficulty: "sedang",
-    question: "15 × 8 = ?",
-    options: ["100", "110", "120", "130"],
-    answer: 2,
-    explanation: "15 × 8 = 120"
-  },
-  {
-    id: 18,
-    category: "perkalian",
-    difficulty: "mudah",
-    question: "11 × 5 = ?",
-    options: ["45", "50", "55", "60"],
-    answer: 2,
-    explanation: "11 × 5 = 55"
-  },
-  {
-    id: 19,
-    category: "pembagian",
-    difficulty: "mudah",
-    question: "24 ÷ 6 = ?",
-    options: ["3", "4", "5", "6"],
-    answer: 1,
-    explanation: "24 ÷ 6 = 4"
-  },
-  {
-    id: 20,
-    category: "pembagian",
-    difficulty: "mudah",
-    question: "45 ÷ 5 = ?",
-    options: ["7", "8", "9", "10"],
-    answer: 2,
-    explanation: "45 ÷ 5 = 9"
-  },
-  {
-    id: 21,
-    category: "pembagian",
-    difficulty: "sedang",
-    question: "96 ÷ 8 = ?",
-    options: ["10", "12", "14", "16"],
-    answer: 1,
-    explanation: "96 ÷ 8 = 12"
-  },
-  {
-    id: 22,
-    category: "pembagian",
-    difficulty: "sulit",
-    question: "144 ÷ 12 = ?",
-    options: ["10", "11", "12", "14"],
-    answer: 2,
-    explanation: "144 ÷ 12 = 12"
-  },
-  {
-    id: 23,
-    category: "pembagian",
-    difficulty: "sedang",
-    question: "225 ÷ 15 = ?",
-    options: ["12", "15", "18", "20"],
-    answer: 1,
-    explanation: "225 ÷ 15 = 15"
-  },
-  {
-    id: 24,
-    category: "pembagian",
-    difficulty: "mudah",
-    question: "63 ÷ 7 = ?",
-    options: ["7", "8", "9", "10"],
-    answer: 2,
-    explanation: "63 ÷ 7 = 9"
-  },
-  {
-    id: 25,
-    category: "penjumlahan",
-    difficulty: "sulit",
-    question: "1.250 + 875 = ?",
-    options: ["2.025", "2.125", "2.225", "2.325"],
-    answer: 1,
-    explanation: "1.250 + 875 = 2.125"
-  },
-  {
-    id: 26,
-    category: "pengurangan",
-    difficulty: "sulit",
-    question: "2.000 − 1.275 = ?",
-    options: ["625", "725", "825", "925"],
-    answer: 1,
-    explanation: "2.000 − 1.275 = 725"
-  },
-  {
-    id: 27,
-    category: "perkalian",
-    difficulty: "sulit",
-    question: "24 × 25 = ?",
-    options: ["500", "550", "600", "650"],
-    answer: 2,
-    explanation: "24 × 25 = 600"
-  },
-  {
-    id: 28,
-    category: "pembagian",
-    difficulty: "sulit",
-    question: "360 ÷ 24 = ?",
-    options: ["12", "15", "18", "20"],
-    answer: 1,
-    explanation: "360 ÷ 24 = 15"
-  },
-  {
-    id: 29,
-    category: "penjumlahan",
-    difficulty: "sedang",
-    question: "234 + 198 = ?",
-    options: ["422", "432", "442", "452"],
-    answer: 1,
-    explanation: "234 + 198 = 432"
-  },
-  {
-    id: 30,
-    category: "perkalian",
-    difficulty: "sedang",
-    question: "18 × 6 = ?",
-    options: ["98", "108", "118", "128"],
-    answer: 1,
-    explanation: "18 × 6 = 108"
-  },
-  {
-    id: 31,
-    category: "pengurangan",
-    difficulty: "sedang",
-    question: "700 − 258 = ?",
-    options: ["432", "442", "452", "462"],
-    answer: 1,
-    explanation: "700 − 258 = 442"
-  },
-  {
-    id: 32,
-    category: "pembagian",
-    difficulty: "sedang",
-    question: "168 ÷ 14 = ?",
-    options: ["10", "12", "14", "16"],
-    answer: 1,
-    explanation: "168 ÷ 14 = 12"
-  },
-  {
-    id: 33,
-    category: "penjumlahan",
-    difficulty: "mudah",
-    question: "19 + 24 = ?",
-    options: ["33", "43", "53", "63"],
-    answer: 1,
-    explanation: "19 + 24 = 43"
-  },
-  {
-    id: 34,
-    category: "pengurangan",
-    difficulty: "mudah",
-    question: "82 − 36 = ?",
-    options: ["36", "46", "56", "66"],
-    answer: 1,
-    explanation: "82 − 36 = 46"
-  },
-  {
-    id: 35,
-    category: "perkalian",
-    difficulty: "mudah",
-    question: "7 × 9 = ?",
-    options: ["54", "63", "72", "81"],
-    answer: 1,
-    explanation: "7 × 9 = 63"
-  },
-  {
-    id: 36,
-    category: "pembagian",
-    difficulty: "mudah",
-    question: "81 ÷ 9 = ?",
-    options: ["7", "8", "9", "10"],
-    answer: 2,
-    explanation: "81 ÷ 9 = 9"
-  }
-];
+      <ol>
+        <li>Baca soal matematika pada kartu soal.</li>
+        <li>Klik nama pemain yang mendapat giliran.</li>
+        <li>Pemain yang dipilih menjawab soal.</li>
+        <li>Jawaban benar membuat pemain maju 1 langkah.</li>
+        <li>Jawaban salah membuat pemain mundur 1 langkah.</li>
+        <li>Jika salah, pilih pemain lain untuk melanjutkan.</li>
+        <li>Raih posisi terdepan dan capai garis finish!</li>
+      </ol>
 
-/* =========================
-   DATA PEMAIN
-========================= */
+      <button class="primary" id="modalStartBtn">🚦 SIAP BALAP!</button>
+    </div>
+  </div>
 
-const PLAYER_TEMPLATES = [
-  {
-    id: 1,
-    name: "Rani",
-    avatar: "👧",
-    vehicle: "🏎️"
-  },
-  {
-    id: 2,
-    name: "Bima",
-    avatar: "👦",
-    vehicle: "🚙"
-  },
-  {
-    id: 3,
-    name: "Siti",
-    avatar: "👩‍🦰",
-    vehicle: "🚗"
-  },
-  {
-    id: 4,
-    name: "Dika",
-    avatar: "🧑‍🦱",
-    vehicle: "🚕"
-  }
-];
+  <script>
+    "use strict";
 
-const gameState = {
-  screen: "home",
-  questionIndex: 0,
-  totalQuestions: 10,
-  timeLimit: 15,
-  players: [],
-  questions: [],
-  currentQuestion: null,
-  timerId: null,
-  countdownId: null,
-  timeLeft: 0,
-  questionStartedAt: 0,
-  locked: true,
-  activePlayerId: null,
-  sound: true,
-  settings: {},
-  review: [],
-  playerCount: 4
-};
-
-const $ = id => document.getElementById(id);
-
-const screenNames = [
-  "home",
-  "settings",
-  "lobby",
-  "countdown",
-  "game",
-  "results"
-];
-
-/* =========================
-   AUDIO SEDERHANA
-========================= */
-
-let audioContext = null;
-
-function beep(
-  frequency = 500,
-  duration = .1,
-  type = "sine"
-) {
-  if (!gameState.sound) return;
-
-  try {
-    audioContext ||= new (
-      window.AudioContext ||
-      window.webkitAudioContext
-    )();
-
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-
-    oscillator.type = type;
-    oscillator.frequency.value = frequency;
-
-    gain.gain.setValueAtTime(
-      .08,
-      audioContext.currentTime
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-      .001,
-      audioContext.currentTime + duration
-    );
-
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-
-    oscillator.start();
-    oscillator.stop(
-      audioContext.currentTime + duration
-    );
-  } catch (error) {
-    // Audio tidak wajib berjalan di semua browser.
-  }
-}
-
-function soundSequence(type) {
-  if (type === "correct") {
-    beep(700, .1);
-    setTimeout(() => beep(950, .13), 100);
-  }
-
-  if (type === "wrong") {
-    beep(180, .18, "sawtooth");
-  }
-
-  if (type === "go") {
-    beep(500, .1);
-    setTimeout(() => beep(800, .25), 100);
-  }
-
-  if (type === "finish") {
-    beep(600, .1);
-    setTimeout(() => beep(850, .1), 120);
-    setTimeout(() => beep(1100, .3), 240);
-  }
-}
-
-/* =========================
-   SCREEN MANAGEMENT
-========================= */
-
-function showScreen(screenName) {
-  gameState.screen = screenName;
-
-  screenNames.forEach(name => {
-    $(`${name}Screen`).classList.toggle(
-      "active",
-      name === screenName
-    );
-  });
-}
-
-function openHowTo() {
-  $("howModal").classList.add("open");
-}
-
-function closeHowTo() {
-  $("howModal").classList.remove("open");
-}
-
-/* =========================
-   INISIALISASI GAME
-========================= */
-
-function initGame() {
-  const playerCount = Number(
-    $("playerCount").value
-  );
-
-  gameState.totalQuestions = Number(
-    $("questionCount").value
-  );
-
-  gameState.timeLimit = Number(
-    $("timeLimit").value
-  );
-
-  gameState.playerCount = playerCount;
-
-  gameState.settings = {
-    name: $("gameName").value.trim() || "Math Race",
-    category: $("category").value,
-    difficulty: $("difficulty").value
-  };
-
-  gameState.players = PLAYER_TEMPLATES
-    .slice(0, playerCount)
-    .map((player, index) => ({
-      ...player,
-      position: 0,
-      score: 0,
-      correct: 0,
-      wrong: 0,
-      combo: 0,
-      totalAnswerTime: 0,
-      answers: [],
-      finished: false,
-      finishOrder: null,
-      lane: index
-    }));
-
-  gameState.questions = selectQuestions(
-    gameState.settings.category,
-    gameState.settings.difficulty,
-    gameState.totalQuestions
-  );
-
-  gameState.questionIndex = 0;
-  gameState.review = [];
-  gameState.currentQuestion = null;
-  gameState.activePlayerId = null;
-  gameState.locked = true;
-
-  $("lobbyGameName").textContent =
-    gameState.settings.name.toUpperCase();
-
-  $("gameTitle").textContent =
-    gameState.settings.name.toUpperCase();
-
-  renderLobby();
-  showScreen("lobby");
-}
-
-function selectQuestions(
-  category,
-  difficulty,
-  count
-) {
-  let filtered = QUESTION_BANK.filter(question => {
-    const categoryMatch =
-      category === "campuran" ||
-      question.category === category;
-
-    const difficultyMatch =
-      difficulty === "campuran" ||
-      question.difficulty === difficulty;
-
-    return categoryMatch && difficultyMatch;
-  });
-
-  if (filtered.length < count) {
-    const additional = QUESTION_BANK.filter(
-      question => !filtered.includes(question)
-    );
-
-    filtered = filtered.concat(additional);
-  }
-
-  return shuffle(filtered).slice(0, count);
-}
-
-function shuffle(array) {
-  const result = [...array];
-
-  for (
-    let index = result.length - 1;
-    index > 0;
-    index--
-  ) {
-    const randomIndex = Math.floor(
-      Math.random() * (index + 1)
-    );
-
-    [
-      result[index],
-      result[randomIndex]
-    ] = [
-      result[randomIndex],
-      result[index]
+    const QUESTION_BANK = [
+      { id: 1, category: "penjumlahan", difficulty: "mudah", question: "12 + 8 = ?", options: ["18", "20", "22", "24"], answer: 1, explanation: "12 + 8 = 20" },
+      { id: 2, category: "penjumlahan", difficulty: "mudah", question: "25 + 17 = ?", options: ["40", "41", "42", "43"], answer: 2, explanation: "25 + 17 = 42" },
+      { id: 3, category: "penjumlahan", difficulty: "sedang", question: "136 + 245 = ?", options: ["371", "381", "391", "401"], answer: 1, explanation: "136 + 245 = 381" },
+      { id: 4, category: "penjumlahan", difficulty: "sulit", question: "487 + 356 = ?", options: ["833", "843", "853", "863"], answer: 1, explanation: "487 + 356 = 843" },
+      { id: 5, category: "penjumlahan", difficulty: "sedang", question: "75 + 68 + 27 = ?", options: ["160", "170", "180", "190"], answer: 1, explanation: "75 + 68 + 27 = 170" },
+      { id: 6, category: "penjumlahan", difficulty: "mudah", question: "45 + 36 = ?", options: ["71", "81", "91", "101"], answer: 1, explanation: "45 + 36 = 81" },
+      { id: 7, category: "pengurangan", difficulty: "mudah", question: "30 − 12 = ?", options: ["16", "18", "20", "22"], answer: 1, explanation: "30 − 12 = 18" },
+      { id: 8, category: "pengurangan", difficulty: "mudah", question: "56 − 29 = ?", options: ["25", "27", "29", "31"], answer: 1, explanation: "56 − 29 = 27" },
+      { id: 9, category: "pengurangan", difficulty: "sedang", question: "400 − 175 = ?", options: ["215", "225", "235", "245"], answer: 1, explanation: "400 − 175 = 225" },
+      { id: 10, category: "pengurangan", difficulty: "sulit", question: "923 − 487 = ?", options: ["426", "436", "446", "456"], answer: 1, explanation: "923 − 487 = 436" },
+      { id: 11, category: "pengurangan", difficulty: "sedang", question: "850 − 275 − 125 = ?", options: ["430", "440", "450", "460"], answer: 2, explanation: "850 − 275 − 125 = 450" },
+      { id: 12, category: "pengurangan", difficulty: "mudah", question: "91 − 47 = ?", options: ["34", "44", "54", "64"], answer: 1, explanation: "91 − 47 = 44" },
+      { id: 13, category: "perkalian", difficulty: "mudah", question: "6 × 7 = ?", options: ["36", "42", "48", "56"], answer: 1, explanation: "6 × 7 = 42" },
+      { id: 14, category: "perkalian", difficulty: "mudah", question: "9 × 8 = ?", options: ["64", "72", "81", "88"], answer: 1, explanation: "9 × 8 = 72" },
+      { id: 15, category: "perkalian", difficulty: "sedang", question: "27 × 4 = ?", options: ["96", "108", "112", "120"], answer: 1, explanation: "27 × 4 = 108" },
+      { id: 16, category: "perkalian", difficulty: "sulit", question: "36 × 12 = ?", options: ["422", "432", "442", "452"], answer: 1, explanation: "36 × 12 = 432" },
+      { id: 17, category: "perkalian", difficulty: "sedang", question: "15 × 8 = ?", options: ["100", "110", "120", "130"], answer: 2, explanation: "15 × 8 = 120" },
+      { id: 18, category: "perkalian", difficulty: "mudah", question: "11 × 5 = ?", options: ["45", "50", "55", "60"], answer: 2, explanation: "11 × 5 = 55" },
+      { id: 19, category: "pembagian", difficulty: "mudah", question: "24 ÷ 6 = ?", options: ["3", "4", "5", "6"], answer: 1, explanation: "24 ÷ 6 = 4" },
+      { id: 20, category: "pembagian", difficulty: "mudah", question: "45 ÷ 5 = ?", options: ["7", "8", "9", "10"], answer: 2, explanation: "45 ÷ 5 = 9" },
+      { id: 21, category: "pembagian", difficulty: "sedang", question: "96 ÷ 8 = ?", options: ["10", "12", "14", "16"], answer: 1, explanation: "96 ÷ 8 = 12" },
+      { id: 22, category: "pembagian", difficulty: "sulit", question: "144 ÷ 12 = ?", options: ["10", "11", "12", "14"], answer: 2, explanation: "144 ÷ 12 = 12" },
+      { id: 23, category: "pembagian", difficulty: "sedang", question: "225 ÷ 15 = ?", options: ["12", "15", "18", "20"], answer: 1, explanation: "225 ÷ 15 = 15" },
+      { id: 24, category: "pembagian", difficulty: "mudah", question: "63 ÷ 7 = ?", options: ["7", "8", "9", "10"], answer: 2, explanation: "63 ÷ 7 = 9" },
+      { id: 25, category: "penjumlahan", difficulty: "sulit", question: "1.250 + 875 = ?", options: ["2.025", "2.125", "2.225", "2.325"], answer: 1, explanation: "1.250 + 875 = 2.125" },
+      { id: 26, category: "pengurangan", difficulty: "sulit", question: "2.000 − 1.275 = ?", options: ["625", "725", "825", "925"], answer: 1, explanation: "2.000 − 1.275 = 725" },
+      { id: 27, category: "perkalian", difficulty: "sulit", question: "24 × 25 = ?", options: ["500", "550", "600", "650"], answer: 2, explanation: "24 × 25 = 600" },
+      { id: 28, category: "pembagian", difficulty: "sulit", question: "360 ÷ 24 = ?", options: ["12", "15", "18", "20"], answer: 1, explanation: "360 ÷ 24 = 15" },
+      { id: 29, category: "penjumlahan", difficulty: "sedang", question: "234 + 198 = ?", options: ["422", "432", "442", "452"], answer: 1, explanation: "234 + 198 = 432" },
+      { id: 30, category: "perkalian", difficulty: "sedang", question: "18 × 6 = ?", options: ["98", "108", "118", "128"], answer: 1, explanation: "18 × 6 = 108" },
+      { id: 31, category: "pengurangan", difficulty: "sedang", question: "700 − 258 = ?", options: ["432", "442", "452", "462"], answer: 1, explanation: "700 − 258 = 442" },
+      { id: 32, category: "pembagian", difficulty: "sedang", question: "168 ÷ 14 = ?", options: ["10", "12", "14", "16"], answer: 1, explanation: "168 ÷ 14 = 12" },
+      { id: 33, category: "penjumlahan", difficulty: "mudah", question: "19 + 24 = ?", options: ["33", "43", "53", "63"], answer: 1, explanation: "19 + 24 = 43" },
+      { id: 34, category: "pengurangan", difficulty: "mudah", question: "82 − 36 = ?", options: ["36", "46", "56", "66"], answer: 1, explanation: "82 − 36 = 46" },
+      { id: 35, category: "perkalian", difficulty: "mudah", question: "7 × 9 = ?", options: ["54", "63", "72", "81"], answer: 1, explanation: "7 × 9 = 63" },
+      { id: 36, category: "pembagian", difficulty: "mudah", question: "81 ÷ 9 = ?", options: ["7", "8", "9", "10"], answer: 2, explanation: "81 ÷ 9 = 9" }
     ];
-  }
 
-  return result;
-}
+    const PLAYER_TEMPLATES = [
+      { id: 1, name: "Rani", avatar: "👧", vehicle: "🏎️" },
+      { id: 2, name: "Bima", avatar: "👦", vehicle: "🚙" },
+      { id: 3, name: "Siti", avatar: "👩‍🦰", vehicle: "🚗" },
+      { id: 4, name: "Dika", avatar: "🧑‍🦱", vehicle: "🚕" }
+    ];
 
-/* =========================
-   LOBBY
-========================= */
+    const gameState = {
+      screen: "home",
+      questionIndex: 0,
+      totalQuestions: 10,
+      timeLimit: 15,
+      players: [],
+      questions: [],
+      currentQuestion: null,
+      timerId: null,
+      countdownId: null,
+      timeLeft: 0,
+      questionStartedAt: 0,
+      locked: true,
+      activePlayerId: null,
+      sound: true,
+      settings: {},
+      review: [],
+      playerCount: 4
+    };
 
-function renderLobby() {
-  $("playersPreview").innerHTML =
-    gameState.players.map(player => `
-      <div class="player-tile">
-        <span class="avatar">${player.avatar}</span>
-        <strong>${player.name}</strong>
-        <br>
-        <small>${player.vehicle}</small>
-      </div>
-    `).join("");
+    const $ = (id) => document.getElementById(id);
+    const screenNames = ["home", "settings", "lobby", "countdown", "game", "results"];
 
-  $("addPlayerBtn").style.display =
-    gameState.players.length >= 4
-      ? "none"
-      : "inline-block";
-}
+    let audioContext = null;
 
-function addPlayer() {
-  if (gameState.playerCount >= 4) return;
+    function beep(frequency = 500, duration = 0.1, type = "sine") {
+      if (!gameState.sound) return;
 
-  gameState.playerCount++;
-  $("playerCount").value =
-    gameState.playerCount;
+      try {
+        audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
 
-  initGame();
-}
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
 
-/* =========================
-   COUNTDOWN
-========================= */
+        oscillator.type = type;
+        oscillator.frequency.value = frequency;
 
-function startRace() {
-  showScreen("countdown");
+        gain.gain.setValueAtTime(0.08, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
 
-  let number = 3;
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
 
-  $("countdownNumber").textContent = number;
-  beep(400, .12);
-
-  gameState.countdownId = setInterval(() => {
-    number--;
-
-    if (number > 0) {
-      $("countdownNumber").textContent = number;
-      beep(400, .12);
-      return;
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (error) {
+        // audio optional
+      }
     }
 
-    $("countdownNumber").textContent = "GO!";
-    soundSequence("go");
+    function soundSequence(type) {
+      if (type === "correct") {
+        beep(700, .1);
+        setTimeout(() => beep(950, .13), 100);
+      }
+      if (type === "wrong") {
+        beep(180, .18, "sawtooth");
+      }
+      if (type === "go") {
+        beep(500, .1);
+        setTimeout(() => beep(800, .25), 100);
+      }
+      if (type === "finish") {
+        beep(600, .1);
+        setTimeout(() => beep(850, .1), 120);
+        setTimeout(() => beep(1100, .3), 240);
+      }
+    }
 
-    clearInterval(gameState.countdownId);
+    function showScreen(screenName) {
+      gameState.screen = screenName;
 
-    setTimeout(() => {
-      showScreen("game");
-      renderRace();
-      showQuestion();
-    }, 700);
-  }, 800);
-}
+      screenNames.forEach((name) => {
+        $(`${name}Screen`).classList.toggle("active", name === screenName);
+      });
+    }
 
-/* =========================
-   SOAL DAN GILIRAN MANUAL
-========================= */
+    function openHowTo() { $("howModal").classList.add("open"); }
+    function closeHowTo() { $("howModal").classList.remove("open"); }
 
-function showQuestion() {
-  if (
-    gameState.questionIndex >=
-    gameState.questions.length
-  ) {
-    finishGame();
-    return;
-  }
+    function shuffle(array) {
+      const result = [...array];
 
-  gameState.currentQuestion =
-    gameState.questions[gameState.questionIndex];
+      for (let index = result.length - 1; index > 0; index--) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        [result[index], result[randomIndex]] = [result[randomIndex], result[index]];
+      }
 
-  /*
-   * Soal baru belum bisa dijawab.
-   * Guru harus memilih pemain terlebih dahulu.
-   */
-  gameState.locked = true;
-  gameState.activePlayerId = null;
-  gameState.questionStartedAt = 0;
+      return result;
+    }
 
-  $("questionCounter").textContent =
-    `SOAL ${gameState.questionIndex + 1}/${gameState.totalQuestions}`;
+    function randomizeQuestionOptions(question) {
+      const correctAnswer = question.options[question.answer];
 
-  $("questionCategory").textContent =
-    `${gameState.currentQuestion.category.toUpperCase()} • ` +
-    `${gameState.currentQuestion.difficulty.toUpperCase()}`;
+      const randomizedQuestion = {
+        ...question,
+        options: shuffle(question.options)
+      };
 
-  $("questionText").textContent =
-    gameState.currentQuestion.question;
+      randomizedQuestion.answer = randomizedQuestion.options.indexOf(correctAnswer);
 
-  $("feedback").textContent = "";
-  $("feedback").className = "feedback";
+      return randomizedQuestion;
+    }
 
-  $("trackMessage").textContent =
-    "PILIH PEMAIN DULU";
+    function selectQuestions(category, difficulty, count) {
+      let filtered = QUESTION_BANK.filter((question) => {
+        const categoryMatch = category === "campuran" || question.category === category;
+        const difficultyMatch = difficulty === "campuran" || question.difficulty === difficulty;
+        return categoryMatch && difficultyMatch;
+      });
 
-  $("turnInfo").innerHTML =
-    "👆 Klik nama pemain pada lintasan untuk memilih pemain yang menjawab.";
+      if (filtered.length < count) {
+        const additional = QUESTION_BANK.filter((question) => !filtered.includes(question));
+        filtered = filtered.concat(additional);
+      }
 
-  $("answers").innerHTML =
-    gameState.currentQuestion.options.map(
-      (option, index) => `
+      return shuffle(filtered).slice(0, count).map(randomizeQuestionOptions);
+    }
+
+    function initGame() {
+      const playerCount = Number($("playerCount").value);
+      gameState.totalQuestions = Number($("questionCount").value);
+      gameState.timeLimit = Number($("timeLimit").value);
+      gameState.playerCount = playerCount;
+
+      gameState.settings = {
+        name: $("gameName").value.trim() || "Math Race",
+        category: $("category").value,
+        difficulty: $("difficulty").value
+      };
+
+      gameState.players = PLAYER_TEMPLATES.slice(0, playerCount).map((player, index) => ({
+        ...player,
+        position: 0,
+        score: 0,
+        correct: 0,
+        wrong: 0,
+        combo: 0,
+        totalAnswerTime: 0,
+        answers: [],
+        finished: false,
+        finishOrder: null,
+        lane: index
+      }));
+
+      gameState.questions = selectQuestions(
+        gameState.settings.category,
+        gameState.settings.difficulty,
+        gameState.totalQuestions
+      );
+
+      gameState.questionIndex = 0;
+      gameState.review = [];
+      gameState.currentQuestion = null;
+      gameState.activePlayerId = null;
+      gameState.locked = true;
+
+      $("lobbyGameName").textContent = gameState.settings.name.toUpperCase();
+      $("gameTitle").textContent = gameState.settings.name.toUpperCase();
+
+      renderLobby();
+      showScreen("lobby");
+    }
+
+    function renderLobby() {
+      $("playersPreview").innerHTML = gameState.players.map((player) => `
+        <div class="player-tile">
+          <span class="avatar">${player.avatar}</span>
+          <strong>${player.name}</strong>
+          <br>
+          <small>${player.vehicle}</small>
+        </div>
+      `).join("");
+
+      $("addPlayerBtn").style.display = gameState.players.length >= 4 ? "none" : "inline-block";
+    }
+
+    function addPlayer() {
+      if (gameState.playerCount >= 4) return;
+
+      gameState.playerCount++;
+      $("playerCount").value = gameState.playerCount;
+      initGame();
+    }
+
+    function startRace() {
+      showScreen("countdown");
+
+      let number = 3;
+      $("countdownNumber").textContent = number;
+      beep(400, .12);
+
+      gameState.countdownId = setInterval(() => {
+        number--;
+
+        if (number > 0) {
+          $("countdownNumber").textContent = number;
+          beep(400, .12);
+          return;
+        }
+
+        $("countdownNumber").textContent = "GO!";
+        soundSequence("go");
+
+        clearInterval(gameState.countdownId);
+
+        setTimeout(() => {
+          showScreen("game");
+          renderRace();
+          showQuestion();
+        }, 700);
+      }, 800);
+    }
+
+    function showQuestion() {
+      if (gameState.questionIndex >= gameState.questions.length) {
+        finishGame();
+        return;
+      }
+
+      gameState.currentQuestion = gameState.questions[gameState.questionIndex];
+      gameState.locked = true;
+      gameState.activePlayerId = null;
+      gameState.questionStartedAt = 0;
+
+      $("questionCounter").textContent = `SOAL ${gameState.questionIndex + 1}/${gameState.totalQuestions}`;
+      $("questionCategory").textContent = `${gameState.currentQuestion.category.toUpperCase()} • ${gameState.currentQuestion.difficulty.toUpperCase()}`;
+      $("questionText").textContent = gameState.currentQuestion.question;
+
+      $("feedback").textContent = "";
+      $("feedback").className = "feedback";
+
+      $("trackMessage").textContent = "PILIH PEMAIN DULU";
+      $("turnInfo").innerHTML = "👆 Klik nama pemain pada lintasan untuk memilih pemain yang menjawab.";
+
+      $("answers").innerHTML = gameState.currentQuestion.options.map((option, index) => `
         <button
           class="answer answer-disabled"
           data-answer="${index}"
           disabled
-          aria-label="Pilihan ${String.fromCharCode(65 + index)}: ${option}">
-          <span class="letter">
-            ${String.fromCharCode(65 + index)}
-          </span>
+          aria-label="Pilihan ${String.fromCharCode(65 + index)}: ${option}"
+        >
+          <span class="letter">${String.fromCharCode(65 + index)}</span>
           ${option}
         </button>
-      `
-    ).join("");
-
-  document.querySelectorAll(".answer")
-    .forEach(button => {
-      button.addEventListener("click", () => {
-        if (!gameState.locked) {
-          submitAnswer(
-            Number(button.dataset.answer)
-          );
-        }
-      });
-    });
-
-  clearInterval(gameState.timerId);
-
-  $("timer").textContent = "Pilih pemain";
-  $("timer").classList.remove("warning");
-
-  updateRanking();
-  updateCombo();
-  renderRace();
-}
-
-function selectPlayer(playerId) {
-  if (gameState.screen !== "game") return;
-
-  if (
-    gameState.questionIndex >=
-    gameState.questions.length
-  ) {
-    return;
-  }
-
-  const player = gameState.players.find(
-    item => item.id === playerId
-  );
-
-  if (!player || player.finished) return;
-
-  /*
-   * Pemain tidak bisa diganti saat sedang menjawab.
-   */
-  if (!gameState.locked) return;
-
-  gameState.activePlayerId = playerId;
-  gameState.locked = false;
-  gameState.questionStartedAt = Date.now();
-
-  $("trackMessage").textContent =
-    `${player.name} MENJAWAB`;
-
-  $("turnInfo").innerHTML =
-    `🎯 Giliran <strong>${player.avatar} ${player.name}</strong> — pilih jawaban!`;
-
-  document.querySelectorAll(".answer")
-    .forEach(button => {
-      button.disabled = false;
-      button.classList.remove("answer-disabled");
-    });
-
-  startTimer();
-  renderRace();
-  updateRanking();
-}
-
-function startTimer() {
-  clearInterval(gameState.timerId);
-
-  gameState.timeLeft =
-    gameState.timeLimit;
-
-  renderTimer();
-
-  gameState.timerId = setInterval(() => {
-    gameState.timeLeft--;
-    renderTimer();
-
-    if (gameState.timeLeft <= 0) {
-      clearInterval(gameState.timerId);
-      submitAnswer(null, true);
-    }
-  }, 1000);
-}
-
-function renderTimer() {
-  const timer = $("timer");
-
-  timer.textContent =
-    `${gameState.timeLeft} detik`;
-
-  timer.classList.toggle(
-    "warning",
-    gameState.timeLeft <= 3
-  );
-}
-
-/* =========================
-   JAWABAN PEMAIN
-========================= */
-
-function submitAnswer(
-  answerIndex,
-  timedOut = false
-) {
-  if (gameState.locked) return;
-
-  const player = gameState.players.find(
-    item => item.id === gameState.activePlayerId
-  );
-
-  if (!player || player.finished) return;
-
-  gameState.locked = true;
-  clearInterval(gameState.timerId);
-
-  const question =
-    gameState.currentQuestion;
-
-  const elapsed = Math.min(
-    gameState.timeLimit,
-    (Date.now() - gameState.questionStartedAt) / 1000
-  );
-
-  const correct =
-    !timedOut &&
-    answerIndex === question.answer;
-
-  const answerButtons = [
-    ...document.querySelectorAll(".answer")
-  ];
-
-  answerButtons.forEach(button => {
-    button.disabled = true;
-  });
-
-  if (
-    answerIndex !== null &&
-    answerButtons[answerIndex]
-  ) {
-    answerButtons[answerIndex]
-      .classList.add(
-        correct ? "correct" : "wrong"
-      );
-  }
-
-  if (answerButtons[question.answer]) {
-    answerButtons[question.answer]
-      .classList.add("correct");
-  }
-
-  gameState.review.push({
-    question,
-    playerId: player.id,
-    playerName: player.name,
-    selected: answerIndex,
-    correct,
-    time: elapsed
-  });
-
-  player.totalAnswerTime += elapsed;
-
-  if (correct) {
-    player.correct++;
-    player.combo++;
-
-    const gained = calculateScore(
-      gameState.timeLeft,
-      player.combo
-    );
-
-    player.score += gained;
-    updatePosition(player, 1);
-
-    $("feedback").innerHTML =
-      `✅ BENAR!
-       <small>${player.name} maju 1 langkah.
-       +${gained} ⭐</small>`;
-
-    $("feedback").className =
-      "feedback good";
-
-    $("trackMessage").textContent =
-      `${player.name} MAJU!`;
-
-    $("turnInfo").innerHTML =
-      `🎉 Hebat! <strong>${player.name}</strong> menjawab benar.`;
-
-    $("questionCard")
-      .classList.remove("shake");
-
-    spawnConfetti(12);
-    soundSequence("correct");
-
-    /*
-     * Jika benar, pemain yang sama menjadi
-     * pemain aktif untuk soal berikutnya.
-     */
-    gameState.activePlayerId = player.id;
-  } else {
-    player.wrong++;
-    player.combo = 0;
-    player.score = Math.max(
-      0,
-      player.score - 5
-    );
-
-    updatePosition(player, -1);
-
-    $("feedback").innerHTML =
-      `❌ UPS!
-       <small>
-       ${timedOut ? "Waktu habis. " : ""}
-       ${player.name} mundur 1 langkah.
-       </small>`;
-
-    $("feedback").className =
-      "feedback bad";
-
-    $("trackMessage").textContent =
-      `${player.name} MUNDUR`;
-
-    $("turnInfo").innerHTML =
-      `🔁 Jawaban belum tepat. Pilih nama pemain lain untuk melanjutkan.`;
-
-    $("questionCard")
-      .classList.add("shake");
-
-    soundSequence("wrong");
-
-    /*
-     * Jika salah, giliran berikutnya otomatis
-     * diarahkan ke pemain lain.
-     */
-    gameState.activePlayerId =
-      getNextAvailablePlayer(player.id);
-  }
-
-  renderRace();
-  updateRanking();
-  updateCombo();
-
-  setTimeout(nextQuestion, 1900);
-}
-
-function getNextAvailablePlayer(
-  currentPlayerId
-) {
-  const currentIndex =
-    gameState.players.findIndex(
-      player => player.id === currentPlayerId
-    );
-
-  for (
-    let offset = 1;
-    offset <= gameState.players.length;
-    offset++
-  ) {
-    const nextIndex =
-      (currentIndex + offset) %
-      gameState.players.length;
-
-    const nextPlayer =
-      gameState.players[nextIndex];
-
-    if (
-      !nextPlayer.finished &&
-      nextPlayer.id !== currentPlayerId
-    ) {
-      return nextPlayer.id;
-    }
-  }
-
-  const remainingPlayer =
-    gameState.players.find(
-      player => !player.finished
-    );
-
-  return remainingPlayer
-    ? remainingPlayer.id
-    : null;
-}
-
-function calculateScore(
-  timeLeft,
-  combo
-) {
-  const speedBonus = Math.max(
-    5,
-    Math.round(
-      (timeLeft / gameState.timeLimit) * 50
-    )
-  );
-
-  const comboBonus =
-    combo >= 5
-      ? 30
-      : combo >= 3
-        ? 20
-        : combo >= 2
-          ? 10
-          : 0;
-
-  return 100 + speedBonus + comboBonus;
-}
-
-function updatePosition(player, amount) {
-  player.position = Math.max(
-    0,
-    Math.min(
-      10,
-      player.position + amount
-    )
-  );
-
-  if (
-    player.position >= 10 &&
-    !player.finished
-  ) {
-    player.position = 10;
-    player.finished = true;
-
-    player.finishOrder =
-      gameState.players.filter(
-        item => item.finished
-      ).length;
-
-    spawnConfetti(25);
-    soundSequence("finish");
-  }
-}
-
-function nextQuestion() {
-  gameState.questionIndex++;
-
-  if (
-    gameState.questionIndex >=
-    gameState.questions.length
-  ) {
-    finishGame();
-    return;
-  }
-
-  showQuestion();
-}
-
-/* =========================
-   LINTASAN DAN RANKING
-========================= */
-
-function renderRace() {
-  const track = $("raceTrack");
-
-  track.querySelectorAll(".lane")
-    .forEach(lane => lane.remove());
-
-  gameState.players.forEach(player => {
-    const active =
-      player.id === gameState.activePlayerId;
-
-    const lane = document.createElement("div");
-
-    lane.className = [
-      "lane",
-      player.finished
-        ? "finished-player"
-        : "clickable",
-      active ? "active-player" : ""
-    ].join(" ");
-
-    lane.setAttribute("role", "button");
-    lane.setAttribute(
-      "aria-label",
-      `Pilih pemain ${player.name}`
-    );
-
-    lane.innerHTML = `
-      <div class="lane-name">
-        ${player.avatar} ${player.name}
-        ${
-          active
-            ? '<span class="active-badge">GILIRAN</span>'
-            : ""
-        }
-      </div>
-
-      <div class="progress-area">
-        <div
-          class="vehicle"
-          id="vehicle-${player.id}">
-          ${player.vehicle}
-        </div>
-      </div>
-
-      <div class="lane-finish">
-        ${player.finished ? "🏁" : "FINISH"}
-      </div>
-    `;
-
-    if (!player.finished) {
-      lane.addEventListener(
-        "click",
-        () => selectPlayer(player.id)
-      );
-    }
-
-    track.appendChild(lane);
-
-    requestAnimationFrame(() => {
-      const vehicle =
-        $(`vehicle-${player.id}`);
-
-      if (!vehicle) return;
-
-      vehicle.style.left =
-        `${player.position * 9.1}%`;
-
-      vehicle.classList.add("moving");
-
-      setTimeout(() => {
-        vehicle.classList.remove("moving");
-      }, 1000);
-    });
-  });
-
-  const activePlayer =
-    gameState.players.find(
-      player => player.id === gameState.activePlayerId
-    );
-
-  const mainPlayer =
-    gameState.players[0];
-
-  $("nearFinish").style.display =
-    mainPlayer &&
-    mainPlayer.position === 9
-      ? "block"
-      : "none";
-
-  if (
-    mainPlayer &&
-    mainPlayer.position === 10
-  ) {
-    $("trackMessage").textContent =
-      "🏁 FINISH!";
-  }
-
-  if (
-    activePlayer &&
-    !gameState.locked
-  ) {
-    $("turnInfo").innerHTML =
-      `🎯 Giliran <strong>${activePlayer.avatar} ${activePlayer.name}</strong> — pilih jawaban!`;
-  }
-}
-
-function getRanking() {
-  return [...gameState.players].sort(
-    (a, b) =>
-      b.position - a.position ||
-      b.score - a.score ||
-      b.correct - a.correct ||
-      a.totalAnswerTime - b.totalAnswerTime
-  );
-}
-
-function updateRanking() {
-  const ranking = getRanking();
-
-  $("ranking").innerHTML =
-    ranking.map((player, index) => `
-      <div class="rank-row">
-        <span>
-          ${
-            ["🥇", "🥈", "🥉", "4️⃣"][index]
-            || `${index + 1}.`
+      `).join("");
+
+      document.querySelectorAll(".answer").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!gameState.locked) {
+            submitAnswer(Number(button.dataset.answer));
           }
-        </span>
-
-        <div>
-          <span class="rank-avatar">
-            ${player.avatar}
-          </span>
-          ${player.name}
-
-          <div class="progress-mini">
-            <i style="width:${player.position * 10}%"></i>
-          </div>
-        </div>
-
-        <span class="rank-score">
-          ${player.score} ⭐
-        </span>
-      </div>
-    `).join("");
-}
-
-function updateCombo() {
-  const player =
-    gameState.players.find(
-      item => item.id === gameState.activePlayerId
-    ) || gameState.players[0];
-
-  if (!player) return;
-
-  const combo = player.combo;
-
-  $("comboText").textContent =
-    combo >= 5
-      ? "👑 UNSTOPPABLE!"
-      : combo >= 3
-        ? "🔥 SUPER COMBO"
-        : combo >= 2
-          ? `🔥 COMBO x${combo}`
-          : "";
-}
-
-/* =========================
-   HASIL AKHIR
-========================= */
-
-function finishGame() {
-  clearInterval(gameState.timerId);
-
-  gameState.players.forEach(player => {
-    if (player.position >= 10) {
-      player.position = 10;
-      player.finished = true;
-    }
-  });
-
-  showResults();
-}
-
-function showResults() {
-  const ranking = getRanking();
-
-  $("podium").innerHTML =
-    ranking.slice(0, 3).map((player, index) => `
-      <div class="podium-place place-${index + 1}">
-        <div class="podium-avatar">
-          ${player.avatar}
-        </div>
-
-        <div class="podium-name">
-          ${["🥇", "🥈", "🥉"][index]}
-          ${player.name}
-        </div>
-
-        <div class="podium-block">
-          ${index + 1}
-        </div>
-      </div>
-    `).join("");
-
-  $("statsGrid").innerHTML =
-    ranking.map((player, index) => {
-      const total =
-        player.correct + player.wrong;
-
-      const accuracy =
-        total
-          ? Math.round(
-              player.correct / total * 100
-            )
-          : 0;
-
-      const average =
-        total
-          ? (
-              player.totalAnswerTime / total
-            ).toFixed(1)
-          : "0.0";
-
-      return `
-        <div class="stat-card">
-          <h3>
-            ${
-              ["🥇", "🥈", "🥉", "4️⃣"][index]
-              || index + 1
-            }
-            ${player.name}
-          </h3>
-
-          <div class="stat-line">
-            <span>Score</span>
-            <strong>${player.score} ⭐</strong>
-          </div>
-
-          <div class="stat-line">
-            <span>Posisi akhir</span>
-            <strong>${player.position}/10</strong>
-          </div>
-
-          <div class="stat-line">
-            <span>Benar / Salah</span>
-            <strong>${player.correct} / ${player.wrong}</strong>
-          </div>
-
-          <div class="stat-line">
-            <span>Akurasi</span>
-            <strong>${accuracy}%</strong>
-          </div>
-
-          <div class="stat-line">
-            <span>Rata-rata waktu</span>
-            <strong>${average} detik</strong>
-          </div>
-        </div>
-      `;
-    }).join("");
-
-  renderReview();
-  showScreen("results");
-  spawnConfetti(70);
-  soundSequence("finish");
-}
-
-function renderReview() {
-  $("review").innerHTML =
-    `<h2>📚 Review Soal</h2>` +
-    gameState.review.map((result, index) => {
-      const selected =
-        result.selected === null
-          ? "Tidak menjawab"
-          : result.question.options[
-              result.selected
-            ];
-
-      const correctAnswer =
-        result.question.options[
-          result.question.answer
-        ];
-
-      return `
-        <div class="review-item">
-          <strong>
-            ${index + 1}.
-            ${result.correct ? "✅ Benar" : "❌ Salah"}
-            — ${result.question.question}
-          </strong>
-
-          <div class="review-detail">
-            Pemain: <b>${result.playerName}</b><br>
-            Jawaban pemain: <b>${selected}</b><br>
-            Jawaban benar: <b>${correctAnswer}</b><br>
-            Penjelasan: ${result.question.explanation}
-          </div>
-        </div>
-      `;
-    }).join("");
-
-  document.querySelectorAll(".review-item")
-    .forEach(item => {
-      item.addEventListener("click", () => {
-        item.classList.toggle("open");
+        });
       });
+
+      clearInterval(gameState.timerId);
+      $("timer").textContent = "Pilih pemain";
+      $("timer").classList.remove("warning");
+
+      updateRanking();
+      updateCombo();
+      renderRace();
+    }
+
+    function selectPlayer(playerId) {
+      if (gameState.screen !== "game") return;
+      if (gameState.questionIndex >= gameState.questions.length) return;
+
+      const player = gameState.players.find((item) => item.id === playerId);
+      if (!player || player.finished) return;
+      if (!gameState.locked) return;
+
+      gameState.activePlayerId = playerId;
+      gameState.locked = false;
+      gameState.questionStartedAt = Date.now();
+
+      $("trackMessage").textContent = `${player.name} MENJAWAB`;
+      $("turnInfo").innerHTML = `🎯 Giliran <strong>${player.avatar} ${player.name}</strong> — pilih jawaban!`;
+
+      document.querySelectorAll(".answer").forEach((button) => {
+        button.disabled = false;
+        button.classList.remove("answer-disabled");
+      });
+
+      startTimer();
+      renderRace();
+      updateRanking();
+    }
+
+    function startTimer() {
+      clearInterval(gameState.timerId);
+      gameState.timeLeft = gameState.timeLimit;
+      renderTimer();
+
+      gameState.timerId = setInterval(() => {
+        gameState.timeLeft--;
+        renderTimer();
+
+        if (gameState.timeLeft <= 0) {
+          clearInterval(gameState.timerId);
+          submitAnswer(null, true);
+        }
+      }, 1000);
+    }
+
+    function renderTimer() {
+      const timer = $("timer");
+      timer.textContent = `${gameState.timeLeft} detik`;
+      timer.classList.toggle("warning", gameState.timeLeft <= 3);
+    }
+
+    function submitAnswer(answerIndex, timedOut = false) {
+      if (gameState.locked) return;
+
+      const player = gameState.players.find((item) => item.id === gameState.activePlayerId);
+      if (!player || player.finished) return;
+
+      gameState.locked = true;
+      clearInterval(gameState.timerId);
+
+      const question = gameState.currentQuestion;
+      const elapsed = Math.min(gameState.timeLimit, (Date.now() - gameState.questionStartedAt) / 1000);
+      const correct = !timedOut && answerIndex === question.answer;
+
+      const answerButtons = [...document.querySelectorAll(".answer")];
+
+      answerButtons.forEach((button) => {
+        button.disabled = true;
+      });
+
+      if (answerIndex !== null && answerButtons[answerIndex]) {
+        answerButtons[answerIndex].classList.add(correct ? "correct" : "wrong");
+      }
+
+      if (answerButtons[question.answer]) {
+        answerButtons[question.answer].classList.add("correct");
+      }
+
+      gameState.review.push({
+        question,
+        playerId: player.id,
+        playerName: player.name,
+        selected: answerIndex,
+        correct,
+        time: elapsed
+      });
+
+      player.totalAnswerTime += elapsed;
+
+      if (correct) {
+        player.correct++;
+        player.combo++;
+
+        const gained = calculateScore(gameState.timeLeft, player.combo);
+
+        player.score += gained;
+        updatePosition(player, 1);
+
+        $("feedback").innerHTML = `✅ BENAR! <small>${player.name} maju 1 langkah. +${gained} ⭐</small>`;
+        $("feedback").className = "feedback good";
+
+        $("trackMessage").textContent = `${player.name} MAJU!`;
+        $("turnInfo").innerHTML = `🎉 Hebat! <strong>${player.name}</strong> menjawab benar.`;
+
+        $("questionCard").classList.remove("shake");
+
+        spawnConfetti(12);
+        soundSequence("correct");
+
+        gameState.activePlayerId = player.id;
+      } else {
+        player.wrong++;
+        player.combo = 0;
+        player.score = Math.max(0, player.score - 5);
+
+        updatePosition(player, -1);
+
+        $("feedback").innerHTML = `❌ UPS! <small>${timedOut ? "Waktu habis. " : ""}${player.name} mundur 1 langkah.</small>`;
+        $("feedback").className = "feedback bad";
+
+        $("trackMessage").textContent = `${player.name} MUNDUR`;
+        $("turnInfo").innerHTML = `🔁 Jawaban belum tepat. Pilih nama pemain lain untuk melanjutkan.`;
+
+        $("questionCard").classList.add("shake");
+        soundSequence("wrong");
+
+        gameState.activePlayerId = getNextAvailablePlayer(player.id);
+      }
+
+      renderRace();
+      updateRanking();
+      updateCombo();
+
+      setTimeout(nextQuestion, 1900);
+    }
+
+    function getNextAvailablePlayer(currentPlayerId) {
+      const currentIndex = gameState.players.findIndex((player) => player.id === currentPlayerId);
+
+      for (let offset = 1; offset <= gameState.players.length; offset++) {
+        const nextIndex = (currentIndex + offset) % gameState.players.length;
+        const nextPlayer = gameState.players[nextIndex];
+
+        if (!nextPlayer.finished && nextPlayer.id !== currentPlayerId) {
+          return nextPlayer.id;
+        }
+      }
+
+      const remainingPlayer = gameState.players.find((player) => !player.finished);
+      return remainingPlayer ? remainingPlayer.id : null;
+    }
+
+    function calculateScore(timeLeft, combo) {
+      const speedBonus = Math.max(5, Math.round((timeLeft / gameState.timeLimit) * 50));
+      const comboBonus = combo >= 5 ? 30 : combo >= 3 ? 20 : combo >= 2 ? 10 : 0;
+      return 100 + speedBonus + comboBonus;
+    }
+
+    function updatePosition(player, amount) {
+      player.position = Math.max(0, Math.min(10, player.position + amount));
+
+      if (player.position >= 10 && !player.finished) {
+        player.position = 10;
+        player.finished = true;
+        player.finishOrder = gameState.players.filter((item) => item.finished).length;
+
+        spawnConfetti(25);
+        soundSequence("finish");
+      }
+    }
+
+    function nextQuestion() {
+      gameState.questionIndex++;
+
+      if (gameState.questionIndex >= gameState.questions.length) {
+        finishGame();
+        return;
+      }
+
+      showQuestion();
+    }
+
+    function renderRace() {
+      const track = $("raceTrack");
+      track.querySelectorAll(".lane").forEach((lane) => lane.remove());
+
+      gameState.players.forEach((player) => {
+        const active = player.id === gameState.activePlayerId;
+        const lane = document.createElement("div");
+
+        lane.className = [
+          "lane",
+          player.finished ? "finished-player" : "clickable",
+          active ? "active-player" : ""
+        ].join(" ");
+
+        lane.setAttribute("role", "button");
+        lane.setAttribute("aria-label", `Pilih pemain ${player.name}`);
+
+        lane.innerHTML = `
+          <div class="lane-name">
+            ${player.avatar} ${player.name}
+            ${active ? '<span class="active-badge">GILIRAN</span>' : ""}
+          </div>
+
+          <div class="progress-area">
+            <div class="vehicle" id="vehicle-${player.id}">${player.vehicle}</div>
+          </div>
+
+          <div class="lane-finish">${player.finished ? "🏁" : "FINISH"}</div>
+        `;
+
+        if (!player.finished) {
+          lane.addEventListener("click", () => selectPlayer(player.id));
+        }
+
+        track.appendChild(lane);
+
+        requestAnimationFrame(() => {
+          const vehicle = $(`vehicle-${player.id}`);
+          if (!vehicle) return;
+
+          vehicle.style.left = `${player.position * 9.1}%`;
+          vehicle.classList.add("moving");
+
+          setTimeout(() => {
+            vehicle.classList.remove("moving");
+          }, 1000);
+        });
+      });
+
+      const activePlayer = gameState.players.find((player) => player.id === gameState.activePlayerId);
+      const mainPlayer = gameState.players[0];
+
+      $("nearFinish").style.display = mainPlayer && mainPlayer.position === 9 ? "block" : "none";
+
+      if (mainPlayer && mainPlayer.position === 10) {
+        $("trackMessage").textContent = "🏁 FINISH!";
+      }
+
+      if (activePlayer && !gameState.locked) {
+        $("turnInfo").innerHTML = `🎯 Giliran <strong>${activePlayer.avatar} ${activePlayer.name}</strong> — pilih jawaban!`;
+      }
+    }
+
+    function getRanking() {
+      return [...gameState.players].sort((a, b) =>
+        b.position - a.position ||
+        b.score - a.score ||
+        b.correct - a.correct ||
+        a.totalAnswerTime - b.totalAnswerTime
+      );
+    }
+
+    function updateRanking() {
+      const ranking = getRanking();
+
+      $("ranking").innerHTML = ranking.map((player, index) => `
+        <div class="rank-row">
+          <span>${["🥇", "🥈", "🥉", "4️⃣"][index] || `${index + 1}.`}</span>
+
+          <div>
+            <span class="rank-avatar">${player.avatar}</span>
+            ${player.name}
+
+            <div class="progress-mini">
+              <i style="width:${player.position * 10}%"></i>
+            </div>
+          </div>
+
+          <span class="rank-score">${player.score} ⭐</span>
+        </div>
+      `).join("");
+    }
+
+    function updateCombo() {
+      const player = gameState.players.find((item) => item.id === gameState.activePlayerId) || gameState.players[0];
+      if (!player) return;
+
+      const combo = player.combo;
+
+      $("comboText").textContent =
+        combo >= 5 ? "👑 UNSTOPPABLE!" :
+        combo >= 3 ? "🔥 SUPER COMBO" :
+        combo >= 2 ? `🔥 COMBO x${combo}` :
+        "";
+    }
+
+    function finishGame() {
+      clearInterval(gameState.timerId);
+
+      gameState.players.forEach((player) => {
+        if (player.position >= 10) {
+          player.position = 10;
+          player.finished = true;
+        }
+      });
+
+      showResults();
+    }
+
+    function showResults() {
+      const ranking = getRanking();
+
+      $("podium").innerHTML = ranking.slice(0, 3).map((player, index) => `
+        <div class="podium-place place-${index + 1}">
+          <div class="podium-avatar">${player.avatar}</div>
+          <div class="podium-name">${["🥇", "🥈", "🥉"][index]} ${player.name}</div>
+          <div class="podium-block">${index + 1}</div>
+        </div>
+      `).join("");
+
+      $("statsGrid").innerHTML = ranking.map((player, index) => {
+        const total = player.correct + player.wrong;
+        const accuracy = total ? Math.round((player.correct / total) * 100) : 0;
+        const average = total ? (player.totalAnswerTime / total).toFixed(1) : "0.0";
+
+        return `
+          <div class="stat-card">
+            <h3>${["🥇", "🥈", "🥉", "4️⃣"][index] || index + 1} ${player.name}</h3>
+
+            <div class="stat-line"><span>Score</span><strong>${player.score} ⭐</strong></div>
+            <div class="stat-line"><span>Posisi akhir</span><strong>${player.position}/10</strong></div>
+            <div class="stat-line"><span>Benar / Salah</span><strong>${player.correct} / ${player.wrong}</strong></div>
+            <div class="stat-line"><span>Akurasi</span><strong>${accuracy}%</strong></div>
+            <div class="stat-line"><span>Rata-rata waktu</span><strong>${average} detik</strong></div>
+          </div>
+        `;
+      }).join("");
+
+      renderReview();
+      showScreen("results");
+      spawnConfetti(70);
+      soundSequence("finish");
+    }
+
+    function renderReview() {
+      $("review").innerHTML = `<h2>📚 Review Soal</h2>` + gameState.review.map((result, index) => {
+        const selected = result.selected === null ? "Tidak menjawab" : result.question.options[result.selected];
+        const correctAnswer = result.question.options[result.question.answer];
+
+        return `
+          <div class="review-item">
+            <strong>${index + 1}. ${result.correct ? "✅ Benar" : "❌ Salah"} — ${result.question.question}</strong>
+
+            <div class="review-detail">
+              Pemain: <b>${result.playerName}</b><br>
+              Jawaban pemain: <b>${selected}</b><br>
+              Jawaban benar: <b>${correctAnswer}</b><br>
+              Penjelasan: ${result.question.explanation}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      document.querySelectorAll(".review-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          item.classList.toggle("open");
+        });
+      });
+    }
+
+    function spawnConfetti(amount = 20) {
+      const colors = ["#ff6278", "#ffd84d", "#39a9f4", "#27c889", "#8765e8", "#ff9d42"];
+
+      for (let index = 0; index < amount; index++) {
+        const element = document.createElement("i");
+        element.className = "confetti-piece";
+        element.style.left = `${Math.random() * 100}%`;
+        element.style.top = `${-20 - Math.random() * 30}px`;
+        element.style.background = colors[Math.floor(Math.random() * colors.length)];
+        element.style.transform = `rotate(${Math.random() * 180}deg)`;
+        element.style.animationDelay = `${Math.random() * .5}s`;
+
+        $("confetti").appendChild(element);
+
+        setTimeout(() => element.remove(), 2500);
+      }
+    }
+
+    function resetGame() {
+      clearInterval(gameState.timerId);
+      clearInterval(gameState.countdownId);
+
+      gameState.questionIndex = 0;
+      gameState.review = [];
+      gameState.players = [];
+      gameState.questions = [];
+      gameState.currentQuestion = null;
+      gameState.activePlayerId = null;
+      gameState.locked = true;
+
+      $("review").classList.remove("open");
+      showScreen("settings");
+    }
+
+    $("startHomeBtn").addEventListener("click", () => showScreen("settings"));
+    $("howToBtn").addEventListener("click", openHowTo);
+    $("closeModal").addEventListener("click", closeHowTo);
+    $("modalStartBtn").addEventListener("click", () => { closeHowTo(); showScreen("settings"); });
+
+    $("settingsBackBtn").addEventListener("click", () => showScreen("home"));
+    $("toLobbyBtn").addEventListener("click", initGame);
+    $("lobbyBackBtn").addEventListener("click", () => showScreen("settings"));
+    $("addPlayerBtn").addEventListener("click", addPlayer);
+    $("startRaceBtn").addEventListener("click", startRace);
+
+    $("reviewBtn").addEventListener("click", () => $("review").classList.toggle("open"));
+    $("restartBtn").addEventListener("click", resetGame);
+
+    $("soundBtn").addEventListener("click", () => {
+      gameState.sound = !gameState.sound;
+      $("soundBtn").textContent = gameState.sound ? "🔊 SOUND ON" : "🔇 SOUND OFF";
     });
-}
 
-/* =========================
-   EFEK DAN RESET
-========================= */
+    document.addEventListener("keydown", (event) => {
+      const tag = (event.target.tagName || "").toLowerCase();
 
-function spawnConfetti(amount = 20) {
-  const colors = [
-    "#ff6278",
-    "#ffd84d",
-    "#39a9f4",
-    "#27c889",
-    "#8765e8",
-    "#ff9d42"
-  ];
+      if (["input", "select", "textarea"].includes(tag)) return;
 
-  for (let index = 0; index < amount; index++) {
-    const element =
-      document.createElement("i");
+      const key = event.key.toLowerCase();
 
-    element.className =
-      "confetti-piece";
+      if (gameState.screen === "game" && !gameState.locked && ["a", "b", "c", "d"].includes(key)) {
+        event.preventDefault();
+        const answerIndex = ["a", "b", "c", "d"].indexOf(key);
+        submitAnswer(answerIndex);
+      }
 
-    element.style.left =
-      `${Math.random() * 100}%`;
+      if (key === " " && gameState.screen === "home") {
+        event.preventDefault();
+        showScreen("settings");
+      }
 
-    element.style.top =
-      `${-20 - Math.random() * 30}px`;
-
-    element.style.background =
-      colors[
-        Math.floor(
-          Math.random() * colors.length
-        )
-      ];
-
-    element.style.transform =
-      `rotate(${Math.random() * 180}deg)`;
-
-    element.style.animationDelay =
-      `${Math.random() * .5}s`;
-
-    $("confetti").appendChild(element);
-
-    setTimeout(() => {
-      element.remove();
-    }, 2500);
-  }
-}
-
-function resetGame() {
-  clearInterval(gameState.timerId);
-  clearInterval(gameState.countdownId);
-
-  gameState.questionIndex = 0;
-  gameState.review = [];
-  gameState.players = [];
-  gameState.questions = [];
-  gameState.currentQuestion = null;
-  gameState.activePlayerId = null;
-  gameState.locked = true;
-
-  $("review").classList.remove("open");
-
-  showScreen("settings");
-}
-
-/* =========================
-   EVENT LISTENERS
-========================= */
-
-$("startHomeBtn").addEventListener(
-  "click",
-  () => showScreen("settings")
-);
-
-$("howToBtn").addEventListener(
-  "click",
-  openHowTo
-);
-
-$("closeModal").addEventListener(
-  "click",
-  closeHowTo
-);
-
-$("modalStartBtn").addEventListener(
-  "click",
-  () => {
-    closeHowTo();
-    showScreen("settings");
-  }
-);
-
-$("settingsBackBtn").addEventListener(
-  "click",
-  () => showScreen("home")
-);
-
-$("toLobbyBtn").addEventListener(
-  "click",
-  initGame
-);
-
-$("lobbyBackBtn").addEventListener(
-  "click",
-  () => showScreen("settings")
-);
-
-$("addPlayerBtn").addEventListener(
-  "click",
-  addPlayer
-);
-
-$("startRaceBtn").addEventListener(
-  "click",
-  startRace
-);
-
-$("reviewBtn").addEventListener(
-  "click",
-  () => $("review").classList.toggle("open")
-);
-
-$("restartBtn").addEventListener(
-  "click",
-  resetGame
-);
-
-$("soundBtn").addEventListener(
-  "click",
-  () => {
-    gameState.sound = !gameState.sound;
-
-    $("soundBtn").textContent =
-      gameState.sound
-        ? "🔊 SOUND ON"
-        : "🔇 SOUND OFF";
-  }
-);
-
-/* =========================
-   KEYBOARD CONTROL
-========================= */
-
-document.addEventListener("keydown", event => {
-  const tag =
-    (event.target.tagName || "").toLowerCase();
-
-  if (
-    ["input", "select", "textarea"].includes(tag)
-  ) {
-    return;
-  }
-
-  const key = event.key.toLowerCase();
-
-  if (
-    gameState.screen === "game" &&
-    !gameState.locked &&
-    ["a", "b", "c", "d"].includes(key)
-  ) {
-    event.preventDefault();
-
-    const answerIndex =
-      ["a", "b", "c", "d"].indexOf(key);
-
-    submitAnswer(answerIndex);
-  }
-
-  if (
-    key === " " &&
-    gameState.screen === "home"
-  ) {
-    event.preventDefault();
-    showScreen("settings");
-  }
-
-  if (
-    key === "r" &&
-    gameState.screen === "results"
-  ) {
-    resetGame();
-  }
-});
-</script>
+      if (key === "r" && gameState.screen === "results") {
+        resetGame();
+      }
+    });
+  </script>
 </body>
 </html>
